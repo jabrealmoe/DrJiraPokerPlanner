@@ -1,0 +1,215 @@
+name: Streamlined Forge CI/CD
+
+on:
+  push:
+    branches: [main, development]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  deployments: write
+
+env:
+  NODE_VERSION: "20.x"
+
+jobs:
+  # ------------------------------------------------------------------
+  # Stage 1: Quality Assurance (Unit Tests & Linting)
+  # ------------------------------------------------------------------
+  qa:
+    name: 1. QA (Lint & Unit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+      - name: Install
+        run: npm ci
+      # Uncomment these when you have tests set up
+      # - name: Lint
+      #   run: npm run lint
+      # - name: Unit Tests
+      #   run: npm run test:unit
+
+  # ------------------------------------------------------------------
+  # Stage 2: Development Deployment & Promotion
+  # ------------------------------------------------------------------
+  deploy-dev:
+    name: 2. Deploy Dev
+    needs: qa
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: ${{ vars.DEV_SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+      - name: Install Forge config
+        run: |
+          npm install -g @forge/cli
+          npm ci
+      - name: Build
+        run: npm run build
+      - name: Authenticate
+        run: |
+          forge settings set usage-analytics false
+        env:
+          FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+      - name: Deploy to Development
+        run: forge deploy -e development --non-interactive
+        env:
+          FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+
+      # Direct Promotion: Development -> Main
+      - name: Promote directly to Main (Production)
+        if: success()
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git checkout main
+          git merge development --allow-unrelated-histories -X theirs -m "chore(release): Promote Development to Main"
+          git push origin main
+
+  # ------------------------------------------------------------------
+  # Stage 3: Versioning (On Push to Main)
+  # ------------------------------------------------------------------
+  versioning:
+    name: 3. Semantic Versioning
+    needs: [qa]
+    # Triggers when code lands in main (via promotion or direct push)
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
+      changelog: ${{ steps.tag_version.outputs.changelog }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+
+  # ------------------------------------------------------------------
+  # Stage 4: Production Deployment
+  # ------------------------------------------------------------------
+  deploy-production:
+    name: 4. Deploy Production
+    needs: versioning
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.PROD_SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.versioning.outputs.new_tag }} # Deploy the specific tag
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+      - name: Install Forge
+        run: |
+          npm install -g @forge/cli
+          npm ci
+      - name: Build
+        run: npm run build
+      - name: Authenticate
+        run: forge settings set usage-analytics false
+        env:
+          FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+      - name: Deploy to Production
+        id: prod-deploy
+        run: forge deploy -e production --non-interactive
+        env:
+          FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+
+  # ------------------------------------------------------------------
+  # Rollback Capability
+  # ------------------------------------------------------------------
+  rollback:
+    name: 🚨 Rollback Production
+    needs: deploy-production
+    if: failure()
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+      - name: Install Forge
+        run: npm install -g @forge/cli
+      - name: Find Previous Tag
+        id: prev_tag
+        run: |
+          # Get list of tags sorted by date, take the 2nd most recent
+          PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
+          echo "previous_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+          echo "Rolling back to: $PREV_TAG"
+      - name: Checkout Previous Tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.prev_tag.outputs.previous_tag }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Deploy Previous Version
+        run: |
+          if [ -z "${{ steps.prev_tag.outputs.previous_tag }}" ]; then
+            echo "No previous tag found to rollback to."
+            exit 1
+          fi
+          forge settings set usage-analytics false
+          echo "Deploying ${{ steps.prev_tag.outputs.previous_tag }} to production..."
+          forge deploy -e production --non-interactive
+        env:
+          FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+      - name: Notify Rollback
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('🚨 System initiated automatic rollback to ${{ steps.prev_tag.outputs.previous_tag }}.');
+
+  # ------------------------------------------------------------------
+  # Release Creation
+  # ------------------------------------------------------------------
+  release:
+    name: 5. Create Release
+    needs: [deploy-production, versioning]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.versioning.outputs.new_tag }}
+          name: Release ${{ needs.versioning.outputs.new_tag }}
+          body: ${{ needs.versioning.outputs.changelog }}
+          token: ${{ secrets.GITHUB_TOKEN }}
