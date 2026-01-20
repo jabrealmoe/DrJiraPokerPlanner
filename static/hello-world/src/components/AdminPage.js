@@ -37,6 +37,7 @@ const AdminPage = () => {
     setIsSaving(true);
     setStatus(null);
     try {
+      console.log('Saving config:', config);
       await invoke('saveAppConfig', { config });
       setStatus('success');
       setTimeout(() => setStatus(null), 3000);

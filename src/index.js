@@ -189,13 +189,23 @@ resolver.define('joinSession', async (req) => {
 
   // Initialize
   if (!session) {
+    // 1. Fetch Global Config
+    console.log(`[joinSession] Session not found for ${actualRoomKey}, creating new session.`);
+    const config = await storage.get('poker-app-config');
+    console.log(`[joinSession] Fetched global config: ${JSON.stringify(config)}`);
+    
+    const deckType = config ? config.deckType : 'FIBONACCI';
+    const customDeck = config ? config.customDeck : null;
+    console.log(`[joinSession] Using deckType: ${deckType}`);
+
     session = {
       version: 1,
       roomKey: actualRoomKey,
       activeIssueId: issueId || null, 
       status: 'VOTING',
       participants: {},
-      deckType: 'FIBONACCI',
+      deckType: deckType,
+      customDeck: customDeck,
       updatedAt: Date.now(),
       moderatorId: accountId, // Creator is Moderator
       timer: {
@@ -204,6 +214,8 @@ resolver.define('joinSession', async (req) => {
           status: 'STOPPED' 
       }
     };
+  } else {
+      console.log(`[joinSession] Found existing session for ${actualRoomKey} with deckType: ${session.deckType}`);
   }
   
   // Claim Mod if empty
@@ -340,6 +352,8 @@ resolver.define('getAppConfig', async () => {
 
 resolver.define('saveAppConfig', async (req) => {
     const { config } = req.payload;
+    console.log(`[saveAppConfig] Received config: ${JSON.stringify(config)}`);
+
     if (!config) throw new Error("No config provided");
     
     // Basic server-side validation
@@ -348,6 +362,7 @@ resolver.define('saveAppConfig', async (req) => {
     }
     
     await storage.set('poker-app-config', config);
+    console.log(`[saveAppConfig] Config saved successfully.`);
     return { success: true };
 });
 

@@ -1,16 +1,27 @@
 import React, { useMemo } from 'react';
 
-const DECK = [0, 1, 2, 3, 5, 8, 13, 21, '?'];
+const DECKS = {
+    FIBONACCI: [0, 1, 2, 3, 5, 8, 13, 21, '?'],
+    TSHIRT: ['XS', 'S', 'M', 'L', 'XL', '?']
+};
 const SUITS = ['♠️', '♥️', '♣️', '♦️'];
 
-const VotingDeck = ({ selectedValue, onVote, disabled }) => {
-  // Assign a random suite to each card value, stable across re-renders
+const VotingDeck = ({ selectedValue, onVote, disabled, deckType = 'FIBONACCI', customValues }) => {
+  
+  const currentDeck = useMemo(() => {
+     if (deckType === 'CUSTOM' && customValues) {
+         return customValues.split(',').map(s => s.trim());
+     }
+     return DECKS[deckType] || DECKS.FIBONACCI;
+  }, [deckType, customValues]);
+
+  // Assign a random suite to each card value, stable across re-renders (and deck changes)
   const cardSuites = useMemo(() => {
-    return DECK.reduce((acc, val) => {
+    return currentDeck.reduce((acc, val) => {
       acc[val] = SUITS[Math.floor(Math.random() * SUITS.length)];
       return acc;
     }, {});
-  }, []);
+  }, [currentDeck]);
 
   const getSuiteColor = (suite) => {
     return (suite === '♥️' || suite === '♦️') ? '#ef4444' : '#1f2937';
@@ -20,7 +31,7 @@ const VotingDeck = ({ selectedValue, onVote, disabled }) => {
 
   return (
     <div className="deck-area" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', padding: '24px' }}>
-      {DECK.map(val => {
+      {currentDeck.map(val => {
          const suite = cardSuites[val];
          const isSelected = selectedValue === val;
          const isFaceDown = hasSelection && !isSelected;

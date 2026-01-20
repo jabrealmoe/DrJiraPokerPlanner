@@ -497,6 +497,8 @@ function App() {
                 selectedValue={session.participants[accountId || context.accountId]?.vote} 
                 onVote={(val) => invoke('submitVote', { vote: val, roomKey: session.roomKey, issueId: session.issueId })}
                 disabled={session.status === 'REVEALED'}
+                deckType={session.deckType}
+                customValues={session.customDeck}
             />
          </div>
       </div>

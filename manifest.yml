@@ -6,6 +6,7 @@ modules:
         function: resolver
       viewportSize: medium
       title: Dr. Jira Poker Planner
+      description: "Plan your poker sessions with Dr. Jira Poker Planner"
       icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
   jira:adminPage:
     - key: poker-app-admin-page
