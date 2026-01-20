@@ -242,7 +242,7 @@ function App() {
           );
       }
       // Issue Panel Loading
-      if (context.moduleKey === 'poker-app-hello-world-panel') return <div style={{ padding: 20 }}>Connecting...</div>;
+      if (context.moduleKey === 'poker-app-main-panel') return <div style={{ padding: 20 }}>Connecting...</div>;
       
       // Global Lobby
       return (

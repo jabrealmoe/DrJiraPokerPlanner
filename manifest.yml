@@ -1,6 +1,6 @@
 modules:
   jira:issuePanel:
-    - key: poker-app-hello-world-panel
+    - key: poker-app-main-panel
       resource: main
       resolver:
         function: resolver

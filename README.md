@@ -37,7 +37,7 @@ Dr. Jira Poker Planner is a real-time Agile estimation tool built on **Atlassian
 
     ```bash
     npm install
-    cd static/hello-world
+    cd static/poker-planner-ui
     npm install
     cd ../..
     ```
@@ -52,7 +52,7 @@ Dr. Jira Poker Planner is a real-time Agile estimation tool built on **Atlassian
 
     ```bash
     # Build the frontend first
-    cd static/hello-world
+    cd static/poker-planner-ui
     npm run build
     cd ../..
 
