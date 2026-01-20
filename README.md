@@ -4,6 +4,8 @@
 
 Dr. Jira Poker Planner is a real-time Agile estimation tool built on **Atlassian Forge**. It allows teams to vote on Jira issues using story points (Fibonacci, T-Shirt sizes, or Custom decks) directly within the Jira issue view or a standalone lobby.
 
+![Dr. Jira Poker Demo](./assets/demo-1-pp.gif)
+
 ## ✨ Features
 
 - **Real-Time Voting**: Updates instantly for all users (powered by Forge Storage + Polling).
