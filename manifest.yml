@@ -27,7 +27,7 @@ modules:
       handler: index.handler
 resources:
   - key: main
-    path: static/hello-world/build
+    path: static/poker-planner-ui/build
 permissions:
   content:
     styles:
