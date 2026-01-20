@@ -1,0 +1,349 @@
+@import '@atlaskit/css-reset/dist/bundle.css';
+
+:root {
+  /* Using Atlassian Design Tokens for UI Chrome */
+  /* These will auto-switch between light and dark based on user preference */
+  --surface: var(--ds-surface, #ffffff);
+  --surface-raised: var(--ds-surface-raised, #ffffff);
+  --surface-overlay: var(--ds-surface-overlay, #ffffff);
+  --text-main: var(--ds-text, #172b4d);
+  --text-muted: var(--ds-text-subtlest, #626f86);
+  --border: 1px solid var(--ds-border, #091e4224);
+  --primary: var(--ds-background-brand-bold, #0052cc);
+  --primary-text: var(--ds-text-inverse, #ffffff);
+  
+  /* Poker Specifics (Keep these vivid) */
+  --poker-green-gradient: radial-gradient(ellipse at center, #35654d 0%, #1a4130 100%);
+  --poker-accent: #f59e0b;
+}
+
+body {
+  background: var(--ds-surface-sunken, #f4f5f7); /* Light gray in light mode, dark gray in dark mode */
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 20px;
+  height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* Header / Issue Panel */
+.issue-panel {
+  background: var(--surface-raised);
+  border: var(--border);
+  border-radius: 8px; /* Jira uses 3px or 8px usually */
+  padding: 20px;
+  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(0,0,0,0.25));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.issue-header h1 {
+  font-size: 1.25rem;
+  margin: 0 0 8px 0;
+  color: var(--text-main);
+}
+
+.issue-key {
+  background: var(--ds-background-neutral, #dfe1e6);
+  color: var(--ds-text, #42526e);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+/* Main Area */
+.game-area {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  overflow: hidden;
+}
+
+.table-surface {
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 400px;
+  padding: 40px;
+}
+
+/* Outer wooden rail */
+.table-surface::before {
+  content: '';
+  position: absolute;
+  width: calc(90% + 40px);
+  height: calc(70% + 40px);
+  background: linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #3e2723 100%);
+  border-radius: 160px;
+  box-shadow: 
+    0 30px 60px rgba(0,0,0,0.5),
+    inset 0 2px 4px rgba(255,255,255,0.1),
+    inset 0 -2px 4px rgba(0,0,0,0.3);
+  z-index: 0;
+}
+
+/* Chip tray indentations */
+.table-surface::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  bottom: 60px;
+  right: 80px;
+  z-index: 1;
+  box-shadow: 
+    -150px 0 0 rgba(0,0,0,0.3),
+    -300px 0 0 rgba(0,0,0,0.3);
+}
+
+.table-felt {
+  width: 90%;
+  height: 70%;
+  /* Classic Poker Green Felt with texture */
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(0,0,0,0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0,0,0,0.03) 3px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0,0,0,0.03) 3px
+    ),
+    var(--poker-green-gradient);
+  border-radius: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 12px solid #2d1b00;
+  box-shadow: 
+    0 25px 60px rgba(0,0,0,0.4),
+    inset 0 0 30px rgba(0,0,0,0.4),
+    inset 0 2px 4px rgba(255,255,255,0.1);
+  position: relative;
+  z-index: 2;
+  color: white;
+}
+
+.table-felt h2, .table-felt h3 {
+    color: white !important;
+}
+
+/* Decorative 'Wood' border around felt */
+.table-felt::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border-radius: 160px;
+  border: 4px solid #5d4037;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+.reveal-btn {
+  background: var(--ds-background-success-bold, #008DA6);
+  color: var(--primary-text);
+  border: none;
+  padding: 12px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.reveal-btn:hover {
+  transform: scale(1.05);
+  background: var(--ds-background-success-bold-hovered, #00A3BF);
+}
+
+.reveal-btn:disabled {
+   background: var(--ds-background-disabled, #ebecf0);
+   color: var(--ds-text-disabled, #a5adba);
+   cursor: not-allowed;
+   transform: none;
+   box-shadow: none;
+}
+
+/* Participants */
+.participants-panel {
+  background: var(--surface-raised);
+  border: var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: var(--ds-shadow-raised);
+}
+
+.participant-row {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--ds-border, #eee);
+  transition: background 0.2s;
+}
+
+.participant-row:last-child {
+  border-bottom: none;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ds-background-neutral, #eee);
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 2px solid transparent;
+  color: var(--ds-text);
+}
+
+.avatar.voted {
+  border-color: var(--ds-border-success, #36b37e);
+  box-shadow: 0 0 0 2px var(--ds-border-success, #36b37e);
+}
+
+.status-indicator {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.vote-result {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--ds-text-success, #36b37e);
+}
+
+/* Deck */
+.deck-area {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: radial-gradient(ellipse at center, #2e5c44 0%, #1a4130 100%);
+  border-radius: 16px;
+  border: 8px solid #3e2723;
+  box-shadow: 
+    inset 0 2px 4px rgba(255,255,255,0.1),
+    0 8px 16px rgba(0,0,0,0.3);
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.card {
+  width: 60px;
+  height: 90px;
+  background: var(--ds-surface, #fff);
+  border: 1px solid var(--ds-border, #ccc);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  color: var(--ds-text);
+  box-shadow: var(--ds-shadow-raised);
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  background: var(--ds-background-neutral-hovered, #f4f5f7);
+  border-color: var(--primary);
+}
+
+.card.selected {
+  background: var(--primary);
+  color: var(--primary-text);
+  transform: translateY(-12px);
+  box-shadow: 0 12px 20px -8px rgba(0,0,0,0.3);
+  border-color: var(--primary);
+}
+
+.card.face-down {
+  background: repeating-linear-gradient(
+    45deg,
+    #172b4d,
+    #172b4d 10px,
+    #091e42 10px,
+    #091e42 20px
+  );
+  border: 2px solid #fff;
+  cursor: default;
+  transform: translateY(0);
+}
+
+.card.face-down:hover {
+    transform: translateY(0);
+    box-shadow: var(--ds-shadow-raised);
+    border-color: #fff;
+}
+
+.hidden-card {
+  width: 40px;
+  height: 56px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ds-background-neutral-subtle, #ebecf0),
+    var(--ds-background-neutral-subtle, #ebecf0) 10px,
+    var(--ds-background-neutral, #dfe1e6) 10px,
+    var(--ds-background-neutral, #dfe1e6) 20px
+  );
+  border-radius: 4px;
+  border: 1px solid var(--ds-border);
+}
+
+/* Lobby Animation */
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lobby-card {
+  background: var(--surface-raised);
+  padding: 40px;
+  border-radius: 16px;
+  border: var(--border);
+  text-align: center;
+  max-width: 400px;
+  box-shadow: var(--ds-shadow-overlay, 0 8px 16px rgba(0,0,0,0.2));
+  animation: slideDownFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+

@@ -1,0 +1,44 @@
+modules:
+  jira:issuePanel:
+    - key: poker-app-hello-world-panel
+      resource: main
+      resolver:
+        function: resolver
+      viewportSize: medium
+      title: Dr. Jira Poker Planner
+      icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+  jira:adminPage:
+    - key: poker-app-admin-page
+      resource: main
+      resolver:
+        function: resolver
+      title: Dr. Jira Poker Settings
+      layout: basic
+  jira:globalPage:
+    - key: poker-app-global-page
+      resource: main
+      resolver:
+        function: resolver
+      title: Dr. Jira Poker Hub
+      layout: basic
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: static/hello-world/build
+permissions:
+  content:
+    styles:
+      - "unsafe-inline"
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
+    - storage:app
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/39a45bab-8dbf-4fff-8a88-102aa7ce4e87
