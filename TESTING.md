@@ -73,7 +73,7 @@ test("User can open Poker Room from Issue", async ({ page }) => {
 
 ## Mocking (Integration Tests)
 
-For faster, non-E2E tests, it is recommended to test the `static/hello-world` React app in isolation by mocking the `@forge/bridge` API.
+For faster, non-E2E tests, it is recommended to test the `static/poker-planner-ui` React app in isolation by mocking the `@forge/bridge` API.
 
 1.  Run the React app locally (`npm start`).
 2.  Mock `window.bridge` in your test setup to return fake data for `invoke('getBacklog')`, etc.
