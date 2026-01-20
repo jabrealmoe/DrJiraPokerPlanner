@@ -4,6 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "private": true,
+  "has-ui": true,
+  "scripts": {
+    "build": "cd static/hello-world && npm install && npm run build",
+    "lint": "./node_modules/.bin/eslint src/**/* || npm run lint:fix",
+    "lint:fix": "./node_modules/.bin/eslint src/**/* --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "devDependencies": {
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0"
