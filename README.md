@@ -1,6 +1,6 @@
 # Dr. Jira Poker Planner 🃏
 
-![Dr. Jira Poker Preacher](./assets/preacher.png)
+![Dr. Jira Poker Wizard](./assets/lunar_wizard.png)
 
 Dr. Jira Poker Planner is a real-time Agile estimation tool built on **Atlassian Forge**. It allows teams to vote on Jira issues using story points (Fibonacci, T-Shirt sizes, or Custom decks) directly within the Jira issue view or a standalone lobby.
 
