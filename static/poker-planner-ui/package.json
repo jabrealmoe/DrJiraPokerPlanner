@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "REACT_APP_VERSION=$npm_package_version react-scripts build",
     "eject": "react-scripts eject"
   },
   "browserslist": {

@@ -180,6 +180,9 @@ const AdminPage = () => {
            {isSaving ? 'Saving...' : 'Save Configuration'}
          </button>
       </div>
+      <div style={{ textAlign: 'center', marginTop: 40, color: 'var(--text-muted)', fontSize: '0.8rem', opacity: 0.7 }}>
+        v{process.env.REACT_APP_VERSION || '0.0.0-dev'}
+      </div>
     </div>
   );
 };
