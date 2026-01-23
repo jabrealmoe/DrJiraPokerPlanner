@@ -3,27 +3,84 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 // --- Constants & Config ---
 const GAME_WIDTH = 400;
 const GAME_HEIGHT = 500;
-const FPS = 60;
 const GRAVITY = 0.4;
 const JUMP_FORCE = -7;
 const CLIMB_SPEED = 2;
 const WALK_SPEED = 3;
 const SNAPJAW_SPEED = 1.5;
 
-// Colors
+// --- Pixel Art Sprites (Simplified 8-bit style) ---
+// 0=Transparent, 1=Outline/Dark, 2=Skin/Light, 3=MainColor
+const SPRITE_MAPS = {
+  // Junior (Walk/Stand)
+  JR_IDLE: [
+    [0,0,0,3,3,3,3,3,0,0],
+    [0,0,3,2,2,2,3,3,3,0],
+    [0,0,3,2,1,2,2,3,3,0], // Eyes
+    [0,0,3,3,3,2,2,3,3,0],
+    [0,3,3,3,3,3,3,3,3,0], // Body
+    [0,3,3,1,1,3,1,1,3,0],
+    [0,0,3,3,3,3,3,3,0,0],
+    [0,0,3,2,0,0,2,3,0,0], // Legs
+    [0,3,3,0,0,0,0,3,3,0]
+  ],
+  JR_CLIMB: [
+     [0,0,0,3,3,3,3,0,0,0],
+     [0,0,3,2,2,2,3,3,0,0],
+     [0,3,3,3,2,2,3,3,3,0],
+     [3,3,2,2,3,3,2,2,3,3], // Arms up
+     [0,0,3,3,3,3,3,3,0,0],
+     [0,0,3,1,1,1,1,3,0,0],
+     [0,0,3,2,0,0,2,3,0,0],
+     [0,0,3,3,0,0,3,3,0,0]
+  ],
+  SNAPJAW: [
+     [0,0,1,1,1,1,1,0,0],
+     [0,1,4,4,4,4,4,1,0],
+     [1,4,1,5,4,1,5,4,1], // Eyes
+     [1,4,4,4,4,4,4,4,1],
+     [0,1,6,6,6,6,6,1,0], // Teeth
+     [0,0,1,1,1,1,1,0,0]
+  ],
+  FRUIT: [
+      [0,0,7,7,7,0,0],
+      [0,7,7,7,7,7,0],
+      [7,7,7,7,7,7,7],
+      [7,7,7,7,7,7,7],
+      [0,7,7,7,7,7,0],
+      [0,0,7,7,7,0,0],
+      [0,0,0,1,0,0,0] // Stem
+  ],
+  KEY: [
+      [0,8,8,8,0],
+      [8,0,0,0,8],
+      [0,8,8,8,0], // Head
+      [0,0,8,0,0],
+      [0,0,8,0,0],
+      [0,0,8,8,0], // Teeth
+      [0,0,8,0,0]
+  ]
+};
+
+const PALETTE = {
+    1: '#000000', // Outline
+    2: '#FFDAB9', // Skin
+    3: '#FFA500', // Orange (Jr)
+    4: '#0000FF', // Blue (Snapjaw)
+    5: '#FFFF00', // Yellow (Eyes)
+    6: '#FFFFFF', // Teeth
+    7: '#FF0000', // Red Fruit
+    8: '#FFD700'  // Gold Key
+};
+
 const COLORS = {
   BG: '#000000',
   VINE: '#00FF00',
   PLATFORM: '#FF00FF',
-  JR: '#FFA500', // Orange
   PAPA: '#8B4513', // Brown
-  SNAPJAW: '#0000FF', // Blue
-  FRUIT: '#FFFF00', // Yellow
   TEXT: '#FFFFFF',
   WATER: '#000080'
 };
-
-// --- Game Logic ---
 
 const DonkeyKongJr = () => {
     const canvasRef = useRef(null);
@@ -31,31 +88,31 @@ const DonkeyKongJr = () => {
     const [gameState, setGameState] = useState('TITLE'); 
     const [isMuted, setIsMuted] = useState(false);
   
-    // Mutable Game State (All logic here to avoid re-render loop issues)
+    // Mutable Game State
     const stateRef = useRef({
       score: 0,
       lives: 3,
       level: 1,
       highScore: 0,
-      jr: { x: 50, y: 430, dx: 0, dy: 0, w: 20, h: 20, state: 'IDLE', facing: 'RIGHT', onVine: false },
+      jr: { x: 50, y: 430, dx: 0, dy: 0, w: 24, h: 24, state: 'IDLE', facing: 'RIGHT', onVine: false },
       keys: { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, Space: false },
       vines: [],
       platforms: [],
       enemies: [],
       fruits: [],
       key: { x: 0, y: 0, active: false },
-      papa: { x: 0, y: 0, w: 0, h: 0 },
+      papa: { x: 0, y: 0, w: 40, h: 40 },
       timer: 0,
       enemySpawnTimer: 0
     });
   
-    // Init Safe Storage
     useEffect(() => {
         try {
             const saved = localStorage.getItem('dkjr-highscore');
             if (saved) stateRef.current.highScore = parseInt(saved, 10);
-        } catch (e) { console.warn("Local storage blocked", e); }
-        
+        } catch (e) {
+            console.warn("Storage blocked", e);
+        }
         initLevel(1);
     }, []);
   
@@ -83,30 +140,29 @@ const DonkeyKongJr = () => {
             { x: 340, y: 120, active: true }
         ];
         s.key = { x: 180, y: 80, active: true };
-        s.papa = { x: 40, y: 60, w: 30, h: 30 };
+        s.papa = { x: 40, y: 60, w: 40, h: 40 };
         resetRound();
     };
 
     const resetRound = () => {
          const s = stateRef.current;
-         s.jr = { x: 20, y: 430, dx: 0, dy: 0, w: 20, h: 20, state: 'IDLE', facing: 'RIGHT', onVine: false };
+         s.jr = { x: 20, y: 430, dx: 0, dy: 0, w: 24, h: 24, state: 'IDLE', facing: 'RIGHT', onVine: false };
          s.enemies = [];
          s.timer = 0;
     };
   
-    // --- Input Handling ---
     const handleKeyDown = useCallback((e) => {
-      if (stateRef.current.keys.hasOwnProperty(e.code) || e.code === 'Space') {
-        stateRef.current.keys[e.code === 'Space' ? 'Space' : e.code] = true;
-        e.preventDefault();
-      }
-      if (e.key === 'p' || e.key === 'P') togglePause();
+        if (stateRef.current.keys.hasOwnProperty(e.code) || e.code === 'Space') {
+          stateRef.current.keys[e.code === 'Space' ? 'Space' : e.code] = true;
+          e.preventDefault();
+        }
+        if (e.key === 'p' || e.key === 'P') togglePause();
     }, []);
   
     const handleKeyUp = useCallback((e) => {
-      if (stateRef.current.keys.hasOwnProperty(e.code) || e.code === 'Space') {
-        stateRef.current.keys[e.code === 'Space' ? 'Space' : e.code] = false;
-      }
+        if (stateRef.current.keys.hasOwnProperty(e.code) || e.code === 'Space') {
+          stateRef.current.keys[e.code === 'Space' ? 'Space' : e.code] = false;
+        }
     }, []);
   
     const togglePause = () => {
@@ -127,35 +183,27 @@ const DonkeyKongJr = () => {
   
     const toggleMute = () => setIsMuted(prev => !prev);
   
-    // --- Game Loop ---
     useEffect(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      if (!ctx) {
-          setCrashError("Canvas context not supported");
-          return;
-      }
+      ctx.imageSmoothingEnabled = false; 
 
       let animationFrameId;
   
       const gameLoop = () => {
         try {
-            if (gameState === 'PLAYING') {
-              update();
-            }
+            if (gameState === 'PLAYING') update();
             render(ctx);
             animationFrameId = requestAnimationFrame(gameLoop);
         } catch (err) {
-            console.error(err);
             setCrashError(err.message);
         }
       };
-  
+      
       window.addEventListener('keydown', handleKeyDown);
       window.addEventListener('keyup', handleKeyUp);
       
-      // Perform initial render immediately
       render(ctx);
       animationFrameId = requestAnimationFrame(gameLoop);
   
@@ -164,17 +212,15 @@ const DonkeyKongJr = () => {
         window.removeEventListener('keyup', handleKeyUp);
         cancelAnimationFrame(animationFrameId);
       };
-    }, [gameState]); // Removed level from deps to avoid re-init bugs
+    }, [gameState]);
   
-    // --- Update Logic ---
     const update = () => {
       const s = stateRef.current;
       const { keys, jr } = s;
   
-      // -- Player Movement --
       let nearVine = null;
       s.vines.forEach(v => {
-        if (Math.abs((jr.x + jr.w/2) - v.x) < 5 && jr.y >= v.y1 && jr.y <= v.y2 ) {
+        if (Math.abs((jr.x + jr.w/2) - v.x) < 8 && jr.y >= v.y1 && jr.y <= v.y2 ) {
           nearVine = v;
         }
       });
@@ -193,14 +239,12 @@ const DonkeyKongJr = () => {
         if (nearVine) {
             if (jr.y < nearVine.y1) jr.y = nearVine.y1;
             if (jr.y > nearVine.y2) jr.y = nearVine.y2;
-        } else {
-            jr.onVine = false;
-        }
+        } else jr.onVine = false;
         jr.dy = 0; 
       } else {
         if (keys.ArrowLeft) { jr.dx = -WALK_SPEED; jr.facing = 'LEFT'; }
         else if (keys.ArrowRight) { jr.dx = WALK_SPEED; jr.facing = 'RIGHT'; }
-        else { jr.dx = 0; }
+        else jr.dx = 0;
   
         if (keys.Space && jr.grounded) {
           jr.dy = JUMP_FORCE;
@@ -212,15 +256,11 @@ const DonkeyKongJr = () => {
         jr.y += jr.dy;
       }
   
-      // Platform Collisions
+      // Collisions
       jr.grounded = false;
       if (!jr.onVine) {
         s.platforms.forEach(p => {
-          if (jr.dy >= 0 && 
-              jr.y + jr.h <= p.y + jr.dy + 5 && 
-              jr.y + jr.h >= p.y - 5 && 
-              jr.x + jr.w > p.x && 
-              jr.x < p.x + p.w) {
+          if (jr.dy >= 0 && jr.y + jr.h <= p.y + jr.dy + 8 && jr.y + jr.h >= p.y - 5 && jr.x + jr.w > p.x && jr.x < p.x + p.w) {
                 jr.y = p.y - jr.h;
                 jr.dy = 0;
                 jr.grounded = true;
@@ -236,41 +276,36 @@ const DonkeyKongJr = () => {
       if (jr.x < 0) jr.x = 0;
       if (jr.x + jr.w > GAME_WIDTH) jr.x = GAME_WIDTH - jr.w;
   
-  
-      // -- Enemies AI (Snapjaws) --
+      // Enemies
       s.enemySpawnTimer++;
       if (s.enemySpawnTimer > 150 - (s.level * 10)) { 
         s.enemySpawnTimer = 0;
         const spawnVine = s.vines[Math.floor(Math.random() * s.vines.length)];
         s.enemies.push({
-          x: spawnVine.x - 10,
+          x: spawnVine.x - 12,
           y: spawnVine.y1,
-          w: 20, 
-          h: 15,
-          type: 'SNAPJAW',
+          w: 24, h: 18,
+          dir: 1,
           vineIdx: s.vines.indexOf(spawnVine),
-          dir: 1
+          frame: 0
         });
       }
   
       s.enemies.forEach((en, idx) => {
           en.y += SNAPJAW_SPEED * en.dir;
+          en.frame++;
           const myVine = s.vines[en.vineIdx];
-          if (!myVine || en.y > myVine.y2 + 20) {
-               s.enemies.splice(idx, 1); // Despawn
-          } else if (checkRectCollide(jr, en)) {
-              handleDeath();
-          }
+          if (!myVine || en.y > myVine.y2 + 20) s.enemies.splice(idx, 1);
+          else if (checkRectCollide(jr, en)) handleDeath();
       });
   
-      // -- Fruit Mechanics --
+      // Fruits
       s.fruits.forEach(f => {
         if (f.active && checkRectCollide(jr, {x: f.x, y: f.y, w: 20, h: 20})) {
           f.falling = true;
           f.active = false;
           addScore(100);
         }
-        
         if (f.falling) {
           f.y += 5;
           s.enemies.forEach((en, eIdx) => {
@@ -283,19 +318,13 @@ const DonkeyKongJr = () => {
         }
       });
   
-      // -- Objective (Key) --
       if (s.key.active && checkRectCollide(jr, {x: s.key.x, y: s.key.y, w: 20, h: 20})) {
           handleLevelComplete();
       }
     };
   
     const checkRectCollide = (r1, r2) => {
-      return (
-          r1.x < r2.x + r2.w &&
-          r1.x + r1.w > r2.x &&
-          r1.y < r2.y + r2.h &&
-          r1.y + r1.h > r2.y
-      );
+      return (r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y);
     };
   
     const handleDeath = () => {
@@ -303,143 +332,128 @@ const DonkeyKongJr = () => {
        s.lives -= 1;
        if (s.lives <= 0) {
            setGameState('GAMEOVER');
-           if (s.score > s.highScore) {
-               s.highScore = s.score;
-               try { localStorage.setItem('dkjr-highscore', s.score); } catch(e){}
-           }
-       } else {
-           resetRound();
-       }
+           if (s.score > s.highScore) try { localStorage.setItem('dkjr-highscore', s.score); } catch(e){}
+       } else resetRound();
     };
   
     const handleLevelComplete = () => {
       addScore(500);
       setGameState('LEVEL_COMPLETE');
       setTimeout(() => {
-          const s = stateRef.current;
-          s.level += 1;
+          stateRef.current.level += 1;
           resetRound();
           setGameState('PLAYING');
       }, 2000); 
     };
   
-    const addScore = (points) => {
-      stateRef.current.score += points;
-    };
+    const addScore = (points) => stateRef.current.score += points;
   
     // --- Render ---
+    const drawSprite = (ctx, spriteMap, x, y, scale = 2.5, facingRight = true) => {
+        ctx.save();
+        ctx.translate(x, y);
+        if (!facingRight) {
+            ctx.translate(spriteMap[0].length * scale, 0); 
+            ctx.scale(-1, 1);
+        }
+        
+        for (let r = 0; r < spriteMap.length; r++) {
+            for (let c = 0; c < spriteMap[r].length; c++) {
+                const colorCode = spriteMap[r][c];
+                if (colorCode !== 0) {
+                    ctx.fillStyle = PALETTE[colorCode] || '#FFF';
+                    ctx.fillRect(c * scale, r * scale, scale, scale);
+                }
+            }
+        }
+        ctx.restore();
+    };
+
     const render = (ctx) => {
       const s = stateRef.current;
       
-      // Force Black Background
-      ctx.fillStyle = '#000000';
+      // Black Background with Jungle Gradient
+      var gradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
+      gradient.addColorStop(0, "#000000");
+      gradient.addColorStop(1, "#1a0f00");
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
   
-      // -- Static BG --
-      ctx.fillStyle = COLORS.WATER; 
-      ctx.fillRect(0, GAME_HEIGHT - 10, GAME_WIDTH, 10);
-  
-      ctx.fillStyle = COLORS.PLATFORM;
-      s.platforms.forEach(p => {
-          ctx.fillRect(p.x, p.y, p.w, 10);
-      });
-  
+      // Vines
       ctx.fillStyle = COLORS.VINE;
       s.vines.forEach(v => {
-          ctx.fillRect(v.x-2, v.y1, 4, v.y2 - v.y1);
+          ctx.fillRect(v.x-1, v.y1, 2, v.y2 - v.y1);
+          // Vine nodes
+          for(let vy=v.y1; vy<v.y2; vy+=20) ctx.fillRect(v.x-4, vy, 8, 2);
+      });
+
+      // Platforms
+      s.platforms.forEach(p => {
+          ctx.fillStyle = '#C71585';
+          ctx.fillRect(p.x, p.y, p.w, 10);
+          ctx.beginPath(); // Decorative pattern
+          ctx.strokeStyle = '#FF69B4';
+          ctx.moveTo(p.x, p.y+2); ctx.lineTo(p.x+p.w, p.y+2);
+          ctx.stroke();
       });
   
+      // Cage
       ctx.strokeStyle = '#FFFFFF';
-      ctx.strokeRect(30, 50, 50, 50); // Cage
-  
+      ctx.lineWidth = 2;
+      ctx.strokeRect(30, 50, 60, 50);
+      
+      // Papa (Big Box for now, or scaled sprite)
+      ctx.fillStyle = COLORS.PAPA;
+      ctx.fillRect(s.papa.x, s.papa.y, s.papa.w, s.papa.h);
+      // Give papa some eyes
+      ctx.fillStyle = '#FFF'; 
+      ctx.fillRect(s.papa.x+10, s.papa.y+10, 5,5); 
+      ctx.fillRect(s.papa.x+25, s.papa.y+10, 5,5);
+
       if (gameState === 'TITLE') {
-          drawCenteredText(ctx, "DONKEY KONG JR", 150, 30, COLORS.TEXT);
-          drawCenteredText(ctx, "PRESS START", 250, 20, COLORS.TEXT);
-          drawCenteredText(ctx, `HIGH SCORE: ${s.highScore}`, 350, 16, COLORS.TEXT);
-          drawButtons(ctx);
+          drawCenteredText(ctx, "DONKEY KONG JR", 150, 24, '#00ffff');
+          drawCenteredText(ctx, "PRESS START", 250, 16, '#fff');
           return;
       }
-  
       if (gameState === 'GAMEOVER') {
-          drawCenteredText(ctx, "GAME OVER", 200, 30, '#FF0000');
-          drawCenteredText(ctx, `SCORE: ${s.score}`, 250, 20, COLORS.TEXT);
-          drawCenteredText(ctx, "CLICK TO RESTART", 300, 16, COLORS.TEXT);
+          drawCenteredText(ctx, "GAME OVER", 250, 30, '#ff0000');
           return;
       }
       
-      ctx.fillStyle = COLORS.PAPA;
-      ctx.fillRect(s.papa.x, s.papa.y, s.papa.w, s.papa.h);
+      // Key
+      if (s.key.active) drawSprite(ctx, SPRITE_MAPS.KEY, s.key.x, s.key.y, 2);
   
-      if (s.key.active) {
-          ctx.fillStyle = '#FFFF00';
-          ctx.fillRect(s.key.x, s.key.y, 15, 10);
-      }
-  
+      // Fruits
       s.fruits.forEach(f => {
-          if (f.active || f.falling) {
-              ctx.fillStyle = COLORS.FRUIT;
-              ctx.beginPath();
-              ctx.arc(f.x + 10, f.y + 10, 8, 0, Math.PI * 2);
-              ctx.fill();
-          }
+          if (f.active || f.falling) drawSprite(ctx, SPRITE_MAPS.FRUIT, f.x, f.y, 3);
       });
   
-      ctx.fillStyle = COLORS.SNAPJAW;
+      // Enemies
       s.enemies.forEach(en => {
-          ctx.save();
-          ctx.translate(en.x + en.w/2, en.y + en.h/2);
-          const open = Math.floor(Date.now() / 200) % 2 === 0;
-          if (open) ctx.fillRect(-en.w/2, -en.h/2, en.w, en.h);
-          else ctx.fillRect(-en.w/2, -en.h/2 + 2, en.w, en.h - 4);
-          ctx.restore();
+          // Animate jaws?
+          drawSprite(ctx, SPRITE_MAPS.SNAPJAW, en.x, en.y, 2.5);
       });
   
       // Junior
-      const { jr } = s;
-      ctx.fillStyle = COLORS.JR;
-      ctx.save();
-      ctx.fillRect(jr.x, jr.y, jr.w, jr.h);
-      ctx.fillStyle = '#000';
-      if (jr.facing === 'RIGHT') ctx.fillRect(jr.x + 14, jr.y + 4, 2, 2);
-      else ctx.fillRect(jr.x + 4, jr.y + 4, 2, 2);
-      ctx.restore();
-  
-      // UI
-      ctx.font = '16px monospace';
-      ctx.fillStyle = '#FFF';
-      ctx.fillText(`SCORE: ${s.score}`, 10, 20);
-      ctx.fillText(`LIVES: ${s.lives}`, 10, 40);
-      ctx.fillText(`LEVEL: ${s.level}`, 300, 20);
+      const jrSprite = s.jr.onVine ? SPRITE_MAPS.JR_CLIMB : SPRITE_MAPS.JR_IDLE;
+      drawSprite(ctx, jrSprite, s.jr.x, s.jr.y, 2.5, s.jr.facing === 'RIGHT');
       
-      if (gameState === 'PAUSED') {
-           drawCenteredText(ctx, "PAUSED", 250, 30, '#FFFF00');
-      }
-      if (gameState === 'LEVEL_COMPLETE') {
-           drawCenteredText(ctx, "LEVEL COMPLETED!", 250, 30, '#00FF00');
-           drawCenteredText(ctx, "+500 PTS", 290, 20, '#00FF00');
-      }
+      // UI
+      ctx.fillStyle='#FFF'; ctx.font='14px monospace';
+      ctx.fillText(`SCORE:${s.score}`, 10, 20);
+      ctx.fillText(`LIVES:${s.lives}`, 320, 20);
     };
   
     const drawCenteredText = (ctx, text, y, size, color) => {
       ctx.fillStyle = color;
-      ctx.font = `${size}px monospace`; // Fallback to safe font
+      ctx.font = `${size}px monospace`;
       ctx.textAlign = 'center';
       ctx.fillText(text, GAME_WIDTH / 2, y);
-      ctx.textAlign = 'left'; 
+      ctx.textAlign = 'left';
     };
     
-    const drawButtons = (ctx) => {
-        ctx.fillStyle = '#444';
-        ctx.fillRect(GAME_WIDTH/2 - 50, 400, 100, 40);
-        ctx.fillStyle = '#FFF';
-        ctx.font = '16px monospace';
-        ctx.fillText("START", GAME_WIDTH/2 - 25, 425);
-    };
-  
     const handleCanvasClick = (e) => {
-      if (gameState === 'TITLE' || gameState === 'GAMEOVER') {
-        startGame();
-      }
+      if (gameState === 'TITLE' || gameState === 'GAMEOVER') startGame();
     };
   
     if (crashError) {
@@ -448,41 +462,44 @@ const DonkeyKongJr = () => {
 
     return (
       <div style={{
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        background: '#222', 
-        padding: '20px', 
-        borderRadius: '8px',
-        color: 'white',
-        fontFamily: 'monospace'
+        display: 'flex', flexDirection: 'column', alignItems: 'center', 
+        background: '#111', padding: '16px', borderRadius: '12px',
+        maxWidth: '100%', boxSizing: 'border-box'
       }}>
-        <div style={{marginBottom: '10px', display: 'flex', justifyContent: 'space-between', width: '400px'}}>
-          <span>Donkey Kong Jr. React</span>
-          <button onClick={toggleMute} style={{background: 'none', border: 'none', color: '#AAA', cursor: 'pointer'}}>
+        <div style={{marginBottom: '10px', display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '400px', color:'#eee'}}>
+          <span style={{fontFamily:'monospace', fontWeight:'bold', color:'#00ffff'}}>DK Jr. Arcade</span>
+          <button onClick={toggleMute} style={{background: 'none', border: 'none', cursor: 'pointer', fontSize:'1.2rem'}}>
             {isMuted ? "🔇" : "🔊"}
           </button>
         </div>
   
-        <canvas 
-          ref={canvasRef} 
-          width={GAME_WIDTH} 
-          height={GAME_HEIGHT}
-          onClick={handleCanvasClick}
-          style={{
-            display: 'block',
-            border: '4px solid #555',
-            borderRadius: '4px',
+        <div style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '400px',
+            aspectRatio: '0.8', 
+            display: 'flex',
+            justifyContent: 'center',
             background: '#000',
-            cursor: (gameState === 'TITLE' || gameState === 'GAMEOVER') ? 'pointer' : 'default',
-            width: `${GAME_WIDTH}px`,
-            height: `${GAME_HEIGHT}px`
-          }}
-        />
+            border: '4px solid #444',
+            borderRadius: '4px',
+            overflow: 'hidden'
+        }}>
+           <canvas 
+             ref={canvasRef} 
+             width={GAME_WIDTH} 
+             height={GAME_HEIGHT}
+             onClick={handleCanvasClick}
+             style={{
+               width: '100%',
+               height: '100%',
+               objectFit: 'contain' 
+             }}
+           />
+        </div>
   
-        <div style={{marginTop: '10px', fontSize: '12px', color: '#888', textAlign: 'center'}}>
-          CONTROLS:<br/>
-          ARROWS: Move/Climb • SPACE: Jump • P: Pause
+        <div style={{marginTop: '12px', fontSize: '11px', color: '#888', textAlign: 'center', fontFamily: 'monospace'}}>
+          ARROWS: Move • SPACE: Jump • P: Pause
         </div>
       </div>
     );
