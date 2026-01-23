@@ -179,9 +179,87 @@ const DonkeyKongJr = () => {
       s.lives = 3;
       initLevel(1);
       setGameState('PLAYING');
+      playSound('START');
     };
   
     const toggleMute = () => setIsMuted(prev => !prev);
+
+    // --- Audio Engine ---
+    const playSound = (type) => {
+        if (isMuted) return;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+
+        if (type === 'JUMP') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.linearRampToValueAtTime(300, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        } 
+        else if (type === 'STEP') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(100, now);
+            osc.frequency.exponentialRampToValueAtTime(50, now + 0.05);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.05);
+            osc.start(now);
+            osc.stop(now + 0.05);
+        }
+        else if (type === 'FRUIT') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.setValueAtTime(900, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.2);
+        }
+        else if (type === 'DEATH') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.linearRampToValueAtTime(50, now + 0.5);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.5);
+            osc.start(now);
+            osc.stop(now + 0.5);
+        }
+        else if (type === 'LEVEL_COMPLETE') {
+            osc.type = 'square';
+            // Simple arpeggio
+            [440, 554, 659, 880].forEach((freq, i) => {
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = 'square';
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.frequency.value = freq;
+                g.gain.setValueAtTime(0.1, now + i*0.1);
+                g.gain.linearRampToValueAtTime(0, now + i*0.1 + 0.1);
+                o.start(now + i*0.1);
+                o.stop(now + i*0.1 + 0.1);
+            });
+        }
+        else if (type === 'START') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.setValueAtTime(880, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.4);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        }
+    };
   
     useEffect(() => {
       const canvas = canvasRef.current;
@@ -231,8 +309,8 @@ const DonkeyKongJr = () => {
       }
       
       if (jr.onVine) {
-        if (keys.ArrowUp) jr.y -= CLIMB_SPEED;
-        if (keys.ArrowDown) jr.y += CLIMB_SPEED;
+        if (keys.ArrowUp) { jr.y -= CLIMB_SPEED; if(s.timer % 10 === 0) playSound('STEP'); }
+        if (keys.ArrowDown) { jr.y += CLIMB_SPEED; if(s.timer % 10 === 0) playSound('STEP'); }
         if (keys.ArrowLeft) { jr.x -= 2; jr.onVine = false; }
         if (keys.ArrowRight) { jr.x += 2; jr.onVine = false; }
         
@@ -242,13 +320,22 @@ const DonkeyKongJr = () => {
         } else jr.onVine = false;
         jr.dy = 0; 
       } else {
-        if (keys.ArrowLeft) { jr.dx = -WALK_SPEED; jr.facing = 'LEFT'; }
-        else if (keys.ArrowRight) { jr.dx = WALK_SPEED; jr.facing = 'RIGHT'; }
+        if (keys.ArrowLeft) { 
+            jr.dx = -WALK_SPEED; 
+            jr.facing = 'LEFT';
+            if (jr.grounded && s.timer % 15 === 0) playSound('STEP');
+        }
+        else if (keys.ArrowRight) { 
+            jr.dx = WALK_SPEED; 
+            jr.facing = 'RIGHT'; 
+            if (jr.grounded && s.timer % 15 === 0) playSound('STEP');
+        }
         else jr.dx = 0;
   
         if (keys.Space && jr.grounded) {
           jr.dy = JUMP_FORCE;
           jr.grounded = false;
+          playSound('JUMP');
         }
   
         jr.dy += GRAVITY;
@@ -305,6 +392,7 @@ const DonkeyKongJr = () => {
           f.falling = true;
           f.active = false;
           addScore(100);
+          playSound('FRUIT');
         }
         if (f.falling) {
           f.y += 5;
@@ -312,6 +400,7 @@ const DonkeyKongJr = () => {
               if (checkRectCollide({x: f.x, y: f.y, w: 20, h: 20}, en)) {
                   s.enemies.splice(eIdx, 1);
                   addScore(200);
+                  playSound('JUMP'); // Re-use jump sound for enemy stomp
               }
           });
           if (f.y > GAME_HEIGHT) f.falling = false; 
@@ -328,6 +417,7 @@ const DonkeyKongJr = () => {
     };
   
     const handleDeath = () => {
+       playSound('DEATH');
        const s = stateRef.current;
        s.lives -= 1;
        if (s.lives <= 0) {
@@ -338,6 +428,7 @@ const DonkeyKongJr = () => {
   
     const handleLevelComplete = () => {
       addScore(500);
+      playSound('LEVEL_COMPLETE');
       setGameState('LEVEL_COMPLETE');
       setTimeout(() => {
           stateRef.current.level += 1;
