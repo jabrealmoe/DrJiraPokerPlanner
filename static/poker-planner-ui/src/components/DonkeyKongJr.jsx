@@ -132,7 +132,6 @@ const DonkeyKongJr = () => {
       window.removeEventListener('keyup', handleKeyUp);
       cancelAnimationFrame(animationFrameId);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, level]); // Re-bind if level or state changes fundamentally, though loop handles PAUSED internally
 
   // --- Update Logic ---
