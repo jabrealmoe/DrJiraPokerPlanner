@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@forge/bridge';
+import DonkeyKongJr from './DonkeyKongJr';
 
 const ADMIN_DEFAULTS = {
   deckType: 'FIBONACCI',
@@ -22,6 +23,7 @@ const AdminPage = () => {
   const [config, setConfig] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [status, setStatus] = useState(null); // 'success' | 'error'
+  const [showGame, setShowGame] = useState(false);
 
   useEffect(() => {
     invoke('getAppConfig').then(data => {
@@ -131,6 +133,24 @@ const AdminPage = () => {
              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                Events (Session Start, Reveal, Reset) will be POSTed to this URL.
              </p>
+           </div>
+        )}
+      </Section>
+
+      <Section title="4. Break Time">
+        <label style={{ display: 'flex', alignItems: 'center', marginBottom: 16, cursor: 'pointer' }}>
+          <input 
+            type="checkbox" 
+            checked={showGame} 
+            onChange={(e) => setShowGame(e.target.checked)}
+            style={{ marginRight: 12 }}
+          />
+          Show Secret Arcade
+        </label>
+        
+        {showGame && (
+           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+             <DonkeyKongJr />
            </div>
         )}
       </Section>
