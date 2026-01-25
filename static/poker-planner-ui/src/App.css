@@ -1,4 +1,4 @@
-@import '@atlaskit/css-reset/dist/bundle.css';
+@import "@atlaskit/css-reset/dist/bundle.css";
 
 :root {
   /* Using Atlassian Design Tokens for UI Chrome */
@@ -11,16 +11,25 @@
   --border: 1px solid var(--ds-border, #091e4224);
   --primary: var(--ds-background-brand-bold, #0052cc);
   --primary-text: var(--ds-text-inverse, #ffffff);
-  
+
   /* Poker Specifics (Keep these vivid) */
-  --poker-green-gradient: radial-gradient(ellipse at center, #35654d 0%, #1a4130 100%);
+  --poker-green-gradient: radial-gradient(
+    ellipse at center,
+    #35654d 0%,
+    #1a4130 100%
+  );
   --poker-accent: #f59e0b;
 }
 
 body {
-  background: var(--ds-surface-sunken, #f4f5f7); /* Light gray in light mode, dark gray in dark mode */
+  background: var(
+    --ds-surface-sunken,
+    #f4f5f7
+  ); /* Light gray in light mode, dark gray in dark mode */
   color: var(--text-main);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   height: 100vh;
   overflow: hidden;
@@ -41,7 +50,7 @@ body {
   border: var(--border);
   border-radius: 8px; /* Jira uses 3px or 8px usually */
   padding: 20px;
-  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(0,0,0,0.25));
+  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(0, 0, 0, 0.25));
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -83,53 +92,64 @@ body {
 
 /* Outer wooden rail */
 .table-surface::before {
-  content: '';
+  content: "";
   position: absolute;
   width: calc(90% + 40px);
   height: calc(70% + 40px);
-  background: linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #3e2723 100%);
+  /* Realistic Wood Grain Effect using Gradients */
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, transparent 80%),
+    repeating-linear-gradient(
+      45deg,
+      #4e342e 0px,
+      #3e2723 5px,
+      #5d4037 10px,
+      #4e342e 15px
+    ),
+    linear-gradient(to bottom, #3e2723, #5d4037 30%, #3e2723 80%);
+  background-blend-mode: multiply, normal, overlay;
   border-radius: 160px;
-  box-shadow: 
-    0 30px 60px rgba(0,0,0,0.5),
-    inset 0 2px 4px rgba(255,255,255,0.1),
-    inset 0 -2px 4px rgba(0,0,0,0.3);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.5),
+    inset 0 4px 8px rgba(255, 255, 255, 0.1),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.3);
   z-index: 0;
 }
 
 /* Chip tray indentations */
 .table-surface::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 60px;
   height: 60px;
-  background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
   border-radius: 50%;
   bottom: 60px;
   right: 80px;
   z-index: 1;
-  box-shadow: 
-    -150px 0 0 rgba(0,0,0,0.3),
-    -300px 0 0 rgba(0,0,0,0.3);
+  box-shadow:
+    -150px 0 0 rgba(0, 0, 0, 0.3),
+    -300px 0 0 rgba(0, 0, 0, 0.3);
 }
 
 .table-felt {
   width: 90%;
   height: 70%;
   /* Classic Poker Green Felt with texture */
-  background: 
+  background:
     repeating-linear-gradient(
       90deg,
-      rgba(0,0,0,0.03) 0px,
+      rgba(0, 0, 0, 0.03) 0px,
       transparent 1px,
       transparent 2px,
-      rgba(0,0,0,0.03) 3px
+      rgba(0, 0, 0, 0.03) 3px
     ),
     repeating-linear-gradient(
       0deg,
-      rgba(0,0,0,0.03) 0px,
+      rgba(0, 0, 0, 0.03) 0px,
       transparent 1px,
       transparent 2px,
-      rgba(0,0,0,0.03) 3px
+      rgba(0, 0, 0, 0.03) 3px
     ),
     var(--poker-green-gradient);
   border-radius: 150px;
@@ -137,22 +157,25 @@ body {
   align-items: center;
   justify-content: center;
   border: 12px solid #2d1b00;
-  box-shadow: 
-    0 25px 60px rgba(0,0,0,0.4),
-    inset 0 0 30px rgba(0,0,0,0.4),
-    inset 0 2px 4px rgba(255,255,255,0.1);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.4),
+    inset 0 0 30px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 2;
-  color: white;
+  color: #ffd700; /* Gold text */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-.table-felt h2, .table-felt h3 {
-    color: white !important;
+.table-felt h2,
+.table-felt h3 {
+  color: #ffd700 !important; /* Force Gold */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 /* Decorative 'Wood' border around felt */
 .table-felt::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -12px;
   left: -12px;
@@ -165,7 +188,7 @@ body {
 }
 
 .reveal-btn {
-  background: var(--ds-background-success-bold, #008DA6);
+  background: var(--ds-background-success-bold, #008da6);
   color: var(--primary-text);
   border: none;
   padding: 12px 32px;
@@ -173,21 +196,23 @@ body {
   font-weight: 600;
   border-radius: 50px;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
 
 .reveal-btn:hover {
   transform: scale(1.05);
-  background: var(--ds-background-success-bold-hovered, #00A3BF);
+  background: var(--ds-background-success-bold-hovered, #00a3bf);
 }
 
 .reveal-btn:disabled {
-   background: var(--ds-background-disabled, #ebecf0);
-   color: var(--ds-text-disabled, #a5adba);
-   cursor: not-allowed;
-   transform: none;
-   box-shadow: none;
+  background: var(--ds-background-disabled, #ebecf0);
+  color: var(--ds-text-disabled, #a5adba);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Participants */
@@ -252,9 +277,9 @@ body {
   background: radial-gradient(ellipse at center, #2e5c44 0%, #1a4130 100%);
   border-radius: 16px;
   border: 8px solid #3e2723;
-  box-shadow: 
-    inset 0 2px 4px rgba(255,255,255,0.1),
-    0 8px 16px rgba(0,0,0,0.3);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.3);
   width: fit-content;
   margin: 0 auto;
 }
@@ -287,7 +312,7 @@ body {
   background: var(--primary);
   color: var(--primary-text);
   transform: translateY(-12px);
-  box-shadow: 0 12px 20px -8px rgba(0,0,0,0.3);
+  box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.3);
   border-color: var(--primary);
 }
 
@@ -305,9 +330,9 @@ body {
 }
 
 .card.face-down:hover {
-    transform: translateY(0);
-    box-shadow: var(--ds-shadow-raised);
-    border-color: #fff;
+  transform: translateY(0);
+  box-shadow: var(--ds-shadow-raised);
+  border-color: #fff;
 }
 
 .hidden-card {
@@ -343,7 +368,6 @@ body {
   border: var(--border);
   text-align: center;
   max-width: 400px;
-  box-shadow: var(--ds-shadow-overlay, 0 8px 16px rgba(0,0,0,0.2));
+  box-shadow: var(--ds-shadow-overlay, 0 8px 16px rgba(0, 0, 0, 0.2));
   animation: slideDownFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
-
