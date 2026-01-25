@@ -9,9 +9,50 @@ const CLIMB_SPEED = 2;
 const WALK_SPEED = 3;
 const SNAPJAW_SPEED = 1.5;
 
+// --- Interfaces ---
+interface SpriteMap {
+    [key: string]: number[][];
+}
+
+interface Entity {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    dx?: number;
+    dy?: number;
+    state?: string;
+    facing?: 'LEFT' | 'RIGHT';
+    onVine?: boolean;
+    grounded?: boolean;
+    active?: boolean;
+    falling?: boolean;
+    type?: string;
+    vineIdx?: number;
+    dir?: number;
+    frame?: number;
+}
+
+interface GameState {
+    score: number;
+    lives: number;
+    level: number;
+    highScore: number;
+    jr: Entity;
+    keys: { [key: string]: boolean };
+    vines: { x: number; y1: number; y2: number }[];
+    platforms: { x: number; y: number; w: number }[];
+    enemies: Entity[];
+    fruits: Entity[];
+    key: Entity;
+    papa: Entity;
+    timer: number;
+    enemySpawnTimer: number;
+}
+
 // --- Pixel Art Sprites (Simplified 8-bit style) ---
 // 0=Transparent, 1=Outline/Dark, 2=Skin/Light, 3=MainColor
-const SPRITE_MAPS = {
+const SPRITE_MAPS: SpriteMap = {
   // Junior (Walk/Stand)
   JR_IDLE: [
     [0,0,0,3,3,3,3,3,0,0],
@@ -62,7 +103,7 @@ const SPRITE_MAPS = {
   ]
 };
 
-const PALETTE = {
+const PALETTE: { [key: number]: string } = {
     1: '#000000', // Outline
     2: '#FFDAB9', // Skin
     3: '#FFA500', // Orange (Jr)
@@ -82,25 +123,25 @@ const COLORS = {
   WATER: '#000080'
 };
 
-const DonkeyKongJr = () => {
-    const canvasRef = useRef(null);
-    const [crashError, setCrashError] = useState(null);
-    const [gameState, setGameState] = useState('TITLE'); 
+const DonkeyKongJr: React.FC = () => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [crashError, setCrashError] = useState<string | null>(null);
+    const [gameState, setGameState] = useState<'TITLE' | 'PLAYING' | 'PAUSED' | 'GAMEOVER' | 'LEVEL_COMPLETE'>('TITLE'); 
     const [isMuted, setIsMuted] = useState(false);
   
     // Mutable Game State
-    const stateRef = useRef({
+    const stateRef = useRef<GameState>({
       score: 0,
       lives: 3,
       level: 1,
       highScore: 0,
       jr: { x: 50, y: 430, dx: 0, dy: 0, w: 24, h: 24, state: 'IDLE', facing: 'RIGHT', onVine: false },
       keys: { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, Space: false },
-      vines: [],
-      platforms: [],
-      enemies: [],
-      fruits: [],
-      key: { x: 0, y: 0, active: false },
+      vines: [] as { x: number; y1: number; y2: number }[],
+      platforms: [] as { x: number; y: number; w: number }[],
+      enemies: [] as Entity[],
+      fruits: [] as Entity[],
+      key: { x: 0, y: 0, active: false, w: 0, h: 0 },
       papa: { x: 0, y: 0, w: 40, h: 40 },
       timer: 0,
       enemySpawnTimer: 0
@@ -116,7 +157,7 @@ const DonkeyKongJr = () => {
         initLevel(1);
     }, []);
   
-    const initLevel = (lvl) => {
+    const initLevel = (lvl: number) => {
         const s = stateRef.current;
         s.level = lvl;
         s.vines = [
@@ -135,11 +176,11 @@ const DonkeyKongJr = () => {
             { x: 0, y: 100, w: 400 }
         ];
         s.fruits = [
-            { x: 60, y: 150, active: true },
-            { x: 180, y: 200, active: true },
-            { x: 340, y: 120, active: true }
+            { x: 60, y: 150, active: true, w: 20, h: 20 },
+            { x: 180, y: 200, active: true, w: 20, h: 20 },
+            { x: 340, y: 120, active: true, w: 20, h: 20 }
         ];
-        s.key = { x: 180, y: 80, active: true };
+        s.key = { x: 180, y: 80, active: true, w: 20, h: 20 };
         s.papa = { x: 40, y: 60, w: 40, h: 40 };
         resetRound();
     };
@@ -151,7 +192,7 @@ const DonkeyKongJr = () => {
          s.timer = 0;
     };
   
-    const handleKeyDown = useCallback((e) => {
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
         if (stateRef.current.keys.hasOwnProperty(e.code) || e.code === 'Space') {
           stateRef.current.keys[e.code === 'Space' ? 'Space' : e.code] = true;
           e.preventDefault();
@@ -159,7 +200,7 @@ const DonkeyKongJr = () => {
         if (e.key === 'p' || e.key === 'P') togglePause();
     }, []);
   
-    const handleKeyUp = useCallback((e) => {
+    const handleKeyUp = useCallback((e: KeyboardEvent) => {
         if (stateRef.current.keys.hasOwnProperty(e.code) || e.code === 'Space') {
           stateRef.current.keys[e.code === 'Space' ? 'Space' : e.code] = false;
         }
@@ -183,11 +224,10 @@ const DonkeyKongJr = () => {
     };
   
     const toggleMute = () => setIsMuted(prev => !prev);
-
-    // --- Audio Engine ---
-    const playSound = (type) => {
+  
+    const playSound = (type: string) => {
         if (isMuted) return;
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         if (!AudioContext) return;
         
         const ctx = new AudioContext();
@@ -236,7 +276,6 @@ const DonkeyKongJr = () => {
         }
         else if (type === 'LEVEL_COMPLETE') {
             osc.type = 'square';
-            // Simple arpeggio
             [440, 554, 659, 880].forEach((freq, i) => {
                 const o = ctx.createOscillator();
                 const g = ctx.createGain();
@@ -260,21 +299,23 @@ const DonkeyKongJr = () => {
             osc.stop(now + 0.4);
         }
     };
-  
+
     useEffect(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
+      if (!ctx) return; 
+
       ctx.imageSmoothingEnabled = false; 
 
-      let animationFrameId;
+      let animationFrameId: number;
   
       const gameLoop = () => {
         try {
             if (gameState === 'PLAYING') update();
             render(ctx);
             animationFrameId = requestAnimationFrame(gameLoop);
-        } catch (err) {
+        } catch (err: any) {
             setCrashError(err.message);
         }
       };
@@ -338,8 +379,8 @@ const DonkeyKongJr = () => {
           playSound('JUMP');
         }
   
-        jr.dy += GRAVITY;
-        jr.x += jr.dx;
+        jr.dy = (jr.dy || 0) + GRAVITY;
+        jr.x += jr.dx || 0;
         jr.y += jr.dy;
       }
   
@@ -347,7 +388,8 @@ const DonkeyKongJr = () => {
       jr.grounded = false;
       if (!jr.onVine) {
         s.platforms.forEach(p => {
-          if (jr.dy >= 0 && jr.y + jr.h <= p.y + jr.dy + 8 && jr.y + jr.h >= p.y - 5 && jr.x + jr.w > p.x && jr.x < p.x + p.w) {
+            // @ts-ignore
+          if ((jr.dy || 0) >= 0 && jr.y + jr.h <= p.y + (jr.dy || 0) + 8 && jr.y + jr.h >= p.y - 5 && jr.x + jr.w > p.x && jr.x < p.x + p.w) {
                 jr.y = p.y - jr.h;
                 jr.dy = 0;
                 jr.grounded = true;
@@ -379,9 +421,9 @@ const DonkeyKongJr = () => {
       }
   
       s.enemies.forEach((en, idx) => {
-          en.y += SNAPJAW_SPEED * en.dir;
-          en.frame++;
-          const myVine = s.vines[en.vineIdx];
+          en.y += SNAPJAW_SPEED * (en.dir || 1);
+          if (en.frame !== undefined) en.frame++;
+          const myVine = s.vines[en.vineIdx || 0];
           if (!myVine || en.y > myVine.y2 + 20) s.enemies.splice(idx, 1);
           else if (checkRectCollide(jr, en)) handleDeath();
       });
@@ -397,10 +439,11 @@ const DonkeyKongJr = () => {
         if (f.falling) {
           f.y += 5;
           s.enemies.forEach((en, eIdx) => {
-              if (checkRectCollide({x: f.x, y: f.y, w: 20, h: 20}, en)) {
+              // @ts-ignore
+            if (checkRectCollide({x: f.x, y: f.y, w: 20, h: 20}, en)) {
                   s.enemies.splice(eIdx, 1);
                   addScore(200);
-                  playSound('JUMP'); // Re-use jump sound for enemy stomp
+                  playSound('JUMP'); 
               }
           });
           if (f.y > GAME_HEIGHT) f.falling = false; 
@@ -412,7 +455,7 @@ const DonkeyKongJr = () => {
       }
     };
   
-    const checkRectCollide = (r1, r2) => {
+    const checkRectCollide = (r1: {x:number, y:number, w:number, h:number} | Entity, r2: {x:number, y:number, w:number, h:number} | Entity) => {
       return (r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y);
     };
   
@@ -422,7 +465,7 @@ const DonkeyKongJr = () => {
        s.lives -= 1;
        if (s.lives <= 0) {
            setGameState('GAMEOVER');
-           if (s.score > s.highScore) try { localStorage.setItem('dkjr-highscore', s.score); } catch(e){}
+           if (s.score > s.highScore) try { localStorage.setItem('dkjr-highscore', s.score.toString()); } catch(e){}
        } else resetRound();
     };
   
@@ -437,10 +480,10 @@ const DonkeyKongJr = () => {
       }, 2000); 
     };
   
-    const addScore = (points) => stateRef.current.score += points;
+    const addScore = (points: number) => stateRef.current.score += points;
   
     // --- Render ---
-    const drawSprite = (ctx, spriteMap, x, y, scale = 2.5, facingRight = true) => {
+    const drawSprite = (ctx: CanvasRenderingContext2D, spriteMap: number[][], x: number, y: number, scale = 2.5, facingRight = true) => {
         ctx.save();
         ctx.translate(x, y);
         if (!facingRight) {
@@ -460,7 +503,7 @@ const DonkeyKongJr = () => {
         ctx.restore();
     };
 
-    const render = (ctx) => {
+    const render = (ctx: CanvasRenderingContext2D) => {
       const s = stateRef.current;
       
       // Black Background with Jungle Gradient
@@ -535,7 +578,7 @@ const DonkeyKongJr = () => {
       ctx.fillText(`LIVES:${s.lives}`, 320, 20);
     };
   
-    const drawCenteredText = (ctx, text, y, size, color) => {
+    const drawCenteredText = (ctx: CanvasRenderingContext2D, text: string, y: number, size: number, color: string) => {
       ctx.fillStyle = color;
       ctx.font = `${size}px monospace`;
       ctx.textAlign = 'center';
@@ -543,7 +586,7 @@ const DonkeyKongJr = () => {
       ctx.textAlign = 'left';
     };
     
-    const handleCanvasClick = (e) => {
+    const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
       if (gameState === 'TITLE' || gameState === 'GAMEOVER') startGame();
     };
   

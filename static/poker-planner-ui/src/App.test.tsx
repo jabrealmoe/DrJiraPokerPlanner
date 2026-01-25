@@ -15,7 +15,7 @@ jest.mock('@forge/bridge', () => ({
 
 test('renders loading state initially', async () => {
   // Setup mock return value inside the test
-  view.getContext.mockResolvedValue({ 
+  (view.getContext as jest.Mock).mockResolvedValue({ 
       accountId: 'test-account-id',
       moduleKey: 'poker-app-main-panel'
   });
@@ -26,7 +26,7 @@ test('renders loading state initially', async () => {
 });
 
 test('calls view.theme.enable on mount', async () => {
-  view.getContext.mockResolvedValue({ 
+  (view.getContext as jest.Mock).mockResolvedValue({ 
       accountId: 'test-account-id',
       moduleKey: 'poker-app-main-panel'
   });
@@ -36,7 +36,7 @@ test('calls view.theme.enable on mount', async () => {
 });
 
 test('renders Lobby when context is loaded but no session exists', async () => {
-  view.getContext.mockResolvedValue({ 
+  (view.getContext as jest.Mock).mockResolvedValue({ 
       accountId: 'test-account-id',
       moduleKey: 'poker-app-general-page' 
   });

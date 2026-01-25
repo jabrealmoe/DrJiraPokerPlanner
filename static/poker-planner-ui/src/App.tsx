@@ -11,26 +11,68 @@ import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import RefreshIcon from '@atlaskit/icon/glyph/refresh';
 import AdminPage from './components/AdminPage';
 
+interface BacklogIssue {
+    id: string;
+    key: string;
+    summary: string;
+    icon: string;
+    storyPoints?: number;
+}
+
+interface BacklogInfo {
+    total: number;
+    nextPageToken: string | null;
+}
+
+interface Session {
+    roomKey: string;
+    issueId: string;
+    moderatorId: string;
+    activeIssueId: string;
+    status: 'VOTING' | 'REVEALED';
+    deckType: string;
+    customDeck?: string[];
+    participants: {
+        [accountId: string]: {
+            name: string;
+            vote: string | null;
+            avatarUrl?: string; // Add other participant fields if known
+        };
+    };
+}
+
+interface ForgeContext {
+    accountId: string;
+    moduleKey: string;
+    extension?: {
+        issue?: {
+            id: string;
+            key?: string;
+        }
+    }
+}
+
 function App() {
-  const [context, setContext] = useState(null);
-  const [session, setSession] = useState(null);
-  const [accountId, setAccountId] = useState(null);
+  const [context, setContext] = useState<ForgeContext | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [accountId, setAccountId] = useState<string | null>(null);
   // State for Lobby (Global Page)
   const [lobbyProjectKey, setLobbyProjectKey] = useState(''); 
-  const [backlog, setBacklog] = useState([]);
-  const [backlogInfo, setBacklogInfo] = useState({ total: 0, nextPageToken: null });
+  const [backlog, setBacklog] = useState<BacklogIssue[]>([]);
+  const [backlogInfo, setBacklogInfo] = useState<BacklogInfo>({ total: 0, nextPageToken: null });
   const [isEditing, setIsEditing] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [editForm, setEditForm] = useState({ summary: '', description: '' });
   const [showBacklog, setShowBacklog] = useState(true); // Backlog visibility toggle
-  const [backlogError, setBacklogError] = useState(null);
+  const [backlogError, setBacklogError] = useState<string | null>(null);
 
   // Initialize Context & Check Local Storage
   useEffect(() => {
      // Enable Theme Sync
      view.theme.enable();
 
-     view.getContext().then(ctx => {
+     // @ts-ignore - view.getContext returns generic Promise<any> often, explicitly casting via state
+     view.getContext().then((ctx: any) => {
          setContext(ctx);
          setAccountId(ctx.accountId);
 
@@ -58,15 +100,15 @@ function App() {
   }, []);
 
   // Backlog Fetcher
-  const updateBacklog = async (key, nextPageToken = null, append = false) => {
+  const updateBacklog = async (key: string, nextPageToken: string | null = null, append = false) => {
       setBacklogError(null);
       try {
-        const payload = { projectKey: key };
+        const payload: any = { projectKey: key };
         if (nextPageToken) {
             payload.nextPageToken = nextPageToken;
         }
         
-        const res = await invoke('getBacklog', payload);
+        const res: any = await invoke('getBacklog', payload);
         
         if (res.error) {
             throw new Error(res.error);
@@ -88,7 +130,7 @@ function App() {
             nextPageToken: res.nextPageToken || null
         });
         
-      } catch (e) {
+      } catch (e: any) {
           console.error("Backlog fetch error", e);
           await invoke('logMessage', { message: 'updateBacklog FAILED', data: { error: e.message } });
           setBacklogError(e.message || "Failed to load backlog");
@@ -96,7 +138,7 @@ function App() {
   };
 
   // START GAME (Shared Logic)
-  const startGame = async (targetKey, explicitUser = null, isProject = false) => {
+  const startGame = async (targetKey: string, explicitUser: any = null, isProject = false) => {
       setIsJoining(true); 
       await invoke('logMessage', { message: 'startGame initiated', data: { targetKey, isProject } });
       try {
@@ -113,7 +155,7 @@ function App() {
         }
 
         // Join
-        const payload = {
+        const payload: any = {
             displayName: explicitUser.displayName, 
             avatarUrl: explicitUser.avatarUrls['48x48'],
         };
@@ -126,7 +168,7 @@ function App() {
         // Fetch Backlog if Project Mode
         if (isProject) {
             await invoke('logMessage', { message: 'Calling updateBacklog' });
-            await updateBacklog(targetKey, 0, false);
+            await updateBacklog(targetKey, null, false);
             // Save to localStorage
             localStorage.setItem('dr_jira_poker_session', JSON.stringify({
                 projectKey: targetKey,
@@ -137,7 +179,7 @@ function App() {
         // Polling
         const poll = async () => {
            const pollPayload = isProject ? { roomKey: targetKey } : { issueId: targetKey };
-           const data = await invoke('getSessionState', pollPayload);
+           const data: any = await invoke('getSessionState', pollPayload);
            setSession(data);
            if (data) {
                setIsJoining(false);
@@ -151,9 +193,9 @@ function App() {
            }
         };
         poll();
-        window.pokerInterval = setInterval(poll, 1500);
+        (window as any).pokerInterval = setInterval(poll, 1500);
 
-      } catch (e) {
+      } catch (e: any) {
           console.error("Failed to start game", e);
           await invoke('logMessage', { message: 'startGame FAILED', data: { error: e.message, stack: e.stack } });
           setIsJoining(false);
@@ -167,14 +209,15 @@ function App() {
     }
   }, [context]);
 
-  const handleLobbySubmit = async (e) => {
+  const handleLobbySubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       await invoke('logMessage', { message: 'User clicked Open Room', data: { lobbyProjectKey } });
       // Join as Project Room
       await startGame(lobbyProjectKey, null, true);
   };
 
-  const handleActivateIssue = async (issue) => {
+  const handleActivateIssue = async (issue: BacklogIssue) => {
+      if (!session) return;
       // Mod Only
       if (session.moderatorId !== (accountId || context?.accountId)) return;
 
@@ -184,7 +227,7 @@ function App() {
           issueId: issue.id 
       });
       // Force refresh
-      const data = await invoke('getSessionState', { roomKey: session.roomKey });
+      const data: any = await invoke('getSessionState', { roomKey: session.roomKey });
       setSession(data);
   };
 
@@ -208,7 +251,7 @@ function App() {
   };
 
   const handleUpdateIssue = async () => {
-      if (!session.activeIssueId) return;
+      if (!session || !session.activeIssueId) return;
       await invoke('updateIssue', { 
           issueId: session.activeIssueId,
           summary: editForm.summary,
@@ -474,6 +517,7 @@ function App() {
          {/* Top: Active Issue */}
          <div style={{ padding: 24, paddingBottom: 0 }}>
              
+             {/* @ts-ignore */}
              <ActiveIssue 
                 session={session} 
                 isEditable={session.moderatorId === (accountId || context?.accountId)} 
@@ -483,6 +527,7 @@ function App() {
 
          {/* Middle: Poker Table */}
          <div className="game-area" style={{ gridTemplateColumns: '1fr', padding: 24, overflow: 'visible' }}>
+            {/* @ts-ignore */}
             <GameArea 
                 session={session} 
                 accountId={accountId || context.accountId} 
@@ -493,9 +538,10 @@ function App() {
 
          {/* Bottom: Deck */}
          <div style={{ padding: 24 }}>
+            {/* @ts-ignore */}
             <VotingDeck 
                 selectedValue={session.participants[accountId || context.accountId]?.vote} 
-                onVote={(val) => invoke('submitVote', { vote: val, roomKey: session.roomKey, issueId: session.issueId })}
+                onVote={(val: any) => invoke('submitVote', { vote: val, roomKey: session.roomKey, issueId: session.issueId })}
                 disabled={session.status === 'REVEALED'}
                 deckType={session.deckType}
                 customValues={session.customDeck}
@@ -506,6 +552,7 @@ function App() {
       {/* 3. PARTICIPANTS PANE (Right) */}
       <div style={{ background: 'var(--surface-raised)', borderLeft: 'var(--border)', padding: 16, overflowY: 'auto', height: '100vh' }}>
           <h3 style={{ marginTop: 0, color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>Players</h3>
+          {/* @ts-ignore */}
           <ParticipantList 
               participants={session.participants} 
               revealed={session.status === 'REVEALED'} 

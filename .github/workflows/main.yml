@@ -32,7 +32,11 @@ jobs:
       - name: Install UI Dependencies
         run: |
           cd static/poker-planner-ui
-          npm ci
+          npm ci --legacy-peer-deps
+      - name: Type Check (TypeScript)
+        run: |
+          cd static/poker-planner-ui
+          npx tsc --noEmit
       - name: Run UI Tests
         run: |
           cd static/poker-planner-ui
