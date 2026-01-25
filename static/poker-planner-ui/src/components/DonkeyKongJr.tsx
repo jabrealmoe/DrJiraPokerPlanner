@@ -337,7 +337,7 @@ const DonkeyKongJr: React.FC = () => {
       const s = stateRef.current;
       const { keys, jr } = s;
   
-      let nearVine = null;
+      let nearVine: { x: number; y1: number; y2: number } | null = null;
       s.vines.forEach(v => {
         if (Math.abs((jr.x + jr.w/2) - v.x) < 8 && jr.y >= v.y1 && jr.y <= v.y2 ) {
           nearVine = v;
@@ -346,7 +346,7 @@ const DonkeyKongJr: React.FC = () => {
   
       if (keys.ArrowUp && nearVine) {
         jr.onVine = true;
-        jr.x = nearVine.x - jr.w/2;
+        jr.x = (nearVine as { x: number }).x - jr.w/2;
       }
       
       if (jr.onVine) {
@@ -356,8 +356,8 @@ const DonkeyKongJr: React.FC = () => {
         if (keys.ArrowRight) { jr.x += 2; jr.onVine = false; }
         
         if (nearVine) {
-            if (jr.y < nearVine.y1) jr.y = nearVine.y1;
-            if (jr.y > nearVine.y2) jr.y = nearVine.y2;
+            if (jr.y < (nearVine as { y1: number }).y1) jr.y = (nearVine as { y1: number }).y1;
+            if (jr.y > (nearVine as { y2: number }).y2) jr.y = (nearVine as { y2: number }).y2;
         } else jr.onVine = false;
         jr.dy = 0; 
       } else {
