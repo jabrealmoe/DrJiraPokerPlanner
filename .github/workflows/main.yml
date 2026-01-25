@@ -27,13 +27,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-      - name: Install
+      - name: Install Root
         run: npm ci
-      # Uncomment these when you have tests set up
-      # - name: Lint
-      #   run: npm run lint
-      # - name: Unit Tests
-      #   run: npm run test:unit
+      - name: Install UI Dependencies
+        run: |
+          cd static/poker-planner-ui
+          npm ci
+      - name: Run UI Tests
+        run: |
+          cd static/poker-planner-ui
+          npm test -- --watchAll=false
 
   # ------------------------------------------------------------------
   # Stage 2: Development Deployment & Promotion
