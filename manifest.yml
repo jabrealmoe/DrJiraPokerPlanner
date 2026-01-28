@@ -26,8 +26,6 @@ modules:
     - key: resolver
       handler: index.handler
 resources:
-  - key: app-icon
-    path: assets/drjira.svg
   - key: main
     path: static/poker-planner-ui/build
 permissions:
