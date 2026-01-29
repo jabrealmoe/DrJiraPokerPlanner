@@ -7,7 +7,7 @@ modules:
       viewportSize: medium
       title: Dr. Jira Poker Planner
       description: "Plan your poker sessions with Dr. Jira Poker Planner"
-      icon: https://raw.githubusercontent.com/jabrealmoe/DrJiraPokerPlanner/main/assets/drjira.svg
+      icon: https://raw.githubusercontent.com/jabrealmoe/DrJiraPokerPlanner/main/assets/app-icon.png
   jira:adminPage:
     - key: poker-app-admin-page
       resource: main
