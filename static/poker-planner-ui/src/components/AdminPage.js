@@ -8,8 +8,7 @@ const ADMIN_DEFAULTS = {
   whoCanReveal: 'MODERATOR', // ANY, MODERATOR, ASSIGNEE
   autoReveal: false,
   autoRevealSeconds: 0,
-  webhookUrl: '',
-  webhookEnabled: false
+  autoRevealSeconds: 0
 };
 
 const Section = ({ title, children }) => (
@@ -109,35 +108,9 @@ const AdminPage = () => {
         </div>
       </Section>
 
-      <Section title="3. Integrations (N8N)">
-        <label style={{ display: 'flex', alignItems: 'center', marginBottom: 16, cursor: 'pointer' }}>
-          <input 
-            type="checkbox" 
-            checked={config.webhookEnabled} 
-            onChange={(e) => handleChange('webhookEnabled', e.target.checked)}
-            style={{ marginRight: 12 }}
-          />
-          Enable Webhook Events
-        </label>
-        
-        {config.webhookEnabled && (
-           <div>
-             <label style={{ display: 'block', marginBottom: 8 }}>Webhook URL</label>
-             <input 
-               type="text" 
-               placeholder="https://your-n8n-instance.com/webhook/..."
-               value={config.webhookUrl} 
-               onChange={(e) => handleChange('webhookUrl', e.target.value)}
-               style={{ width: '96%', padding: 8, background: '#0f172a', color: 'white', border: '1px solid #334155', borderRadius: 4 }} 
-             />
-             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-               Events (Session Start, Reveal, Reset) will be POSTed to this URL.
-             </p>
-           </div>
-        )}
-      </Section>
 
-      <Section title="4. Break Time">
+
+      <Section title="3. Break Time">
         <label style={{ display: 'flex', alignItems: 'center', marginBottom: 16, cursor: 'pointer' }}>
           <input 
             type="checkbox" 
