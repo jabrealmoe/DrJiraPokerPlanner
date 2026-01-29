@@ -139,6 +139,9 @@ function App() {
 
   // START GAME (Shared Logic)
   const startGame = async (targetKey: string, explicitUser: any = null, isProject = false) => {
+      // Clear any existing poll to avoid duplicates
+      if ((window as any).pokerInterval) clearInterval((window as any).pokerInterval);
+
       setIsJoining(true); 
       await invoke('logMessage', { message: 'startGame initiated', data: { targetKey, isProject } });
       try {
@@ -236,6 +239,12 @@ function App() {
       
       const confirmLeave = window.confirm("Are you sure you want to leave the room?");
       if (!confirmLeave) return;
+
+      // Stop polling immediately
+      if ((window as any).pokerInterval) {
+          clearInterval((window as any).pokerInterval);
+          (window as any).pokerInterval = null;
+      }
 
       try {
           await invoke('leaveSession', { 
