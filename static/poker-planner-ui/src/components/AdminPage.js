@@ -61,7 +61,7 @@ const AdminPage = () => {
   return (
     <div className="app-container" style={{ display: 'block', maxWidth: 800, margin: '0 auto', overflowY: 'auto' }}>
       <header style={{ marginBottom: 40, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 20 }}>
-        <h1 style={{ fontSize: '2rem' }}>Dr. Jira Settings</h1>
+        <h1 style={{ fontSize: '2rem' }}>Poker Planning Settings</h1>
         <p style={{ color: 'var(--text-muted)' }}>Configure Planning Poker behavior for your organization.</p>
       </header>
 
