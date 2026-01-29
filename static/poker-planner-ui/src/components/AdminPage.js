@@ -68,9 +68,9 @@ const AdminPage = () => {
       <Section title="1. Deck Configuration">
         <label style={{ display: 'block', marginBottom: 8 }}>Default Estimation Deck</label>
         <select 
+          className="modern-select"
           value={config.deckType} 
           onChange={(e) => handleChange('deckType', e.target.value)}
-          style={{ padding: '8px 12px', borderRadius: 4, background: '#0f172a', color: 'white', border: '1px solid #334155', width: '100%' }}
         >
           <option value="FIBONACCI">Fibonacci (0, 1, 2, 3, 5...)</option>
           <option value="TSHIRT">T-Shirt Sizes (XS, S, M, L...)</option>
@@ -82,9 +82,10 @@ const AdminPage = () => {
             <label style={{ display: 'block', marginBottom: 8 }}>Comma-separated values</label>
             <input 
               type="text" 
+              className="modern-input"
               value={config.customDeck} 
               onChange={(e) => handleChange('customDeck', e.target.value)}
-              style={{ width: '96%', padding: 8, background: '#0f172a', color: 'white', border: '1px solid #334155', borderRadius: 4 }} 
+              placeholder="e.g. 1, 2, 3, 5, 8"
             />
           </div>
         )}
