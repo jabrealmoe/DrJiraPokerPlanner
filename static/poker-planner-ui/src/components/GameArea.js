@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Timer from './Timer';
 import TableSeats from './TableSeats';
 
@@ -15,6 +15,36 @@ const GameArea = ({ session, accountId, onReveal, onReset }) => {
   // Derived Timer State
   const timer = session.timer || { status: 'STOPPED', duration: 60 };
   const timerActive = timer.status === 'RUNNING';
+
+  // Audio Logic
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Initialize audio object once
+    if (!audioRef.current) {
+        audioRef.current = new Audio('/jeopardy.mp3');
+        audioRef.current.loop = true; // Loop if timer is longer than song
+        audioRef.current.volume = 0.3; // Be subtle
+    }
+
+    if (timerActive && !revealed) {
+        // Play
+        audioRef.current.play().catch(e => console.log('Audio play block:', e));
+    } else {
+        // Pause and Reset
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+    }
+    
+    // Cleanup
+    return () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+        }
+    };
+  }, [timerActive, revealed]);
   
   // Calculate Average
   const votes = Object.values(session.participants)
