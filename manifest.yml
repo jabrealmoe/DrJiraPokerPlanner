@@ -25,10 +25,6 @@ modules:
   function:
     - key: resolver
       handler: index.handler
-    - key: cleanup-sessions
-      handler: cleanup.handler
-      schedule:
-        - cron: "0 * * * *" # Every hour at minute 0
 resources:
   - key: main
     path: static/poker-planner-ui/build
