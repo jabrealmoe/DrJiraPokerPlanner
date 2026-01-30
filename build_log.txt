@@ -1,0 +1,279 @@
+4. Deploy Production	Set up job	﻿2026-01-23T03:11:50.6193832Z Current runner version: '2.331.0'
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6221768Z ##[group]Runner Image Provisioner
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6222653Z Hosted Compute Agent
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6223224Z Version: 20260115.477
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6223903Z Commit: 4b342d620503cbe250a3154040964899ea7c9b00
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6224613Z Build Date: 2026-01-15T22:32:41Z
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6225274Z Worker ID: {01aa3ad8-1904-4adb-b5db-bac54821416c}
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6226029Z Azure Region: northcentralus
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6226606Z ##[endgroup]
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6228078Z ##[group]Operating System
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6228808Z Ubuntu
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6229308Z 24.04.3
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6230084Z LTS
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6230782Z ##[endgroup]
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6231274Z ##[group]Runner Image
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6231822Z Image: ubuntu-24.04
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6232480Z Version: 20260119.4.1
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6233490Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260119.4/images/ubuntu/Ubuntu2404-Readme.md
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6235214Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260119.4
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6236093Z ##[endgroup]
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6237521Z ##[group]GITHUB_TOKEN Permissions
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6239638Z Contents: write
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6240549Z Deployments: write
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6241222Z Issues: write
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6241740Z Metadata: read
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6242303Z PullRequests: write
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6242822Z ##[endgroup]
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6244924Z Secret source: Actions
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6246131Z Prepare workflow directory
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6757924Z Prepare all required actions
+4. Deploy Production	Set up job	2026-01-23T03:11:50.6812856Z Getting action download info
+4. Deploy Production	Set up job	2026-01-23T03:11:50.9938796Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+4. Deploy Production	Set up job	2026-01-23T03:11:51.1206465Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+4. Deploy Production	Set up job	2026-01-23T03:11:51.3066031Z Complete job name: 4. Deploy Production
+4. Deploy Production	Run actions/checkout@v4	﻿2026-01-23T03:11:51.3764884Z ##[group]Run actions/checkout@v4
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3765761Z with:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3766158Z   ref: v0.1.0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3766602Z   repository: jabrealmoe/DrJiraPokerPlanner
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3767340Z   token: ***
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3767732Z   ssh-strict: true
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3768137Z   ssh-user: git
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3768563Z   persist-credentials: true
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3769024Z   clean: true
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3769446Z   sparse-checkout-cone-mode: true
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3770095Z   fetch-depth: 1
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3770503Z   fetch-tags: false
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3770930Z   show-progress: true
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3771341Z   lfs: false
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3771732Z   submodules: false
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3772153Z   set-safe-directory: true
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3772816Z env:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3773195Z   NODE_VERSION: 20.x
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.3773617Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4846247Z Syncing repository: jabrealmoe/DrJiraPokerPlanner
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4848149Z ##[group]Getting Git version info
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4849086Z Working directory is '/home/runner/work/DrJiraPokerPlanner/DrJiraPokerPlanner'
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4850694Z [command]/usr/bin/git version
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4912165Z git version 2.52.0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4938078Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4959046Z Temporarily overriding HOME='/home/runner/work/_temp/30bda913-5fb8-44ef-8694-213dfd91ad6d' before making global git config changes
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4960752Z Adding repository directory to the temporary git global config as a safe directory
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.4964661Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/DrJiraPokerPlanner/DrJiraPokerPlanner
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5002035Z Deleting the contents of '/home/runner/work/DrJiraPokerPlanner/DrJiraPokerPlanner'
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5005502Z ##[group]Initializing the repository
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5009511Z [command]/usr/bin/git init /home/runner/work/DrJiraPokerPlanner/DrJiraPokerPlanner
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5104621Z hint: Using 'master' as the name for the initial branch. This default branch name
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5106333Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5108147Z hint: to use in all of your new repositories, which will suppress this warning,
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5109453Z hint: call:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5110330Z hint:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5111043Z hint: 	git config --global init.defaultBranch <name>
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5111676Z hint:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5112264Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5113236Z hint: 'development'. The just-created branch can be renamed via this command:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5114008Z hint:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5114404Z hint: 	git branch -m <name>
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5115147Z hint:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5115959Z hint: Disable this message with "git config set advice.defaultBranchName false"
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5117051Z Initialized empty Git repository in /home/runner/work/DrJiraPokerPlanner/DrJiraPokerPlanner/.git/
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5120617Z [command]/usr/bin/git remote add origin https://github.com/jabrealmoe/DrJiraPokerPlanner
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5153558Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5154318Z ##[group]Disabling automatic garbage collection
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5157652Z [command]/usr/bin/git config --local gc.auto 0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5185547Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5186263Z ##[group]Setting up auth
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5192288Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5222062Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5541188Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5572579Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5804621Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.5839110Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.6087719Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.6123918Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.6125239Z ##[group]Fetching the repository
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:51.6133822Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v0.1.0*:refs/remotes/origin/v0.1.0* +refs/tags/v0.1.0*:refs/tags/v0.1.0*
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.1895137Z From https://github.com/jabrealmoe/DrJiraPokerPlanner
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.1896845Z  * [new tag]         v0.1.0     -> v0.1.0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.1928391Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.1929996Z ##[group]Determining the checkout info
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.1934480Z [command]/usr/bin/git branch --list --remote origin/v0.1.0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.1969282Z [command]/usr/bin/git tag --list v0.1.0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.1996222Z v0.1.0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2002416Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2006789Z [command]/usr/bin/git sparse-checkout disable
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2048541Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2077374Z ##[group]Checking out the ref
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2082207Z [command]/usr/bin/git checkout --progress --force refs/tags/v0.1.0
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2374011Z Note: switching to 'refs/tags/v0.1.0'.
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2375453Z 
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2376417Z You are in 'detached HEAD' state. You can look around, make experimental
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2377921Z changes and commit them, and you can discard any commits you make in this
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2379163Z state without impacting any branches by switching back to a branch.
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2380781Z 
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2381603Z If you want to create a new branch to retain commits you create, you may
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2382834Z do so (now or later) by using -c with the switch command. Example:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2383531Z 
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2383859Z   git switch -c <new-branch-name>
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2384376Z 
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2384704Z Or undo this operation with:
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2385179Z 
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2385650Z   git switch -
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2386085Z 
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2386876Z Turn off this advice by setting config variable advice.detachedHead to false
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2387786Z 
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2388431Z HEAD is now at f8ff137 feat: add donkey kong jr mini game to admin page
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2391566Z ##[endgroup]
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2423397Z [command]/usr/bin/git log -1 --format=%H
+4. Deploy Production	Run actions/checkout@v4	2026-01-23T03:11:52.2447076Z f8ff137c61707c786b0f61df68667624e6bc8d9c
+4. Deploy Production	Setup Node	﻿2026-01-23T03:11:52.2754980Z ##[group]Run actions/setup-node@v4
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2756135Z with:
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2757108Z   node-version: 20.x
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2758141Z   cache: npm
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2759243Z   always-auth: false
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2760349Z   check-latest: false
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2761589Z   token: ***
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2762420Z env:
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2763231Z   NODE_VERSION: 20.x
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.2764138Z ##[endgroup]
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.4547675Z Found in cache @ /opt/hostedtoolcache/node/20.20.0/x64
+4. Deploy Production	Setup Node	2026-01-23T03:11:52.4553897Z ##[group]Environment details
+4. Deploy Production	Setup Node	2026-01-23T03:11:55.1178313Z node: v20.20.0
+4. Deploy Production	Setup Node	2026-01-23T03:11:55.1178889Z npm: 10.8.2
+4. Deploy Production	Setup Node	2026-01-23T03:11:55.1179238Z yarn: 1.22.22
+4. Deploy Production	Setup Node	2026-01-23T03:11:55.1180807Z ##[endgroup]
+4. Deploy Production	Setup Node	2026-01-23T03:11:55.1200797Z [command]/opt/hostedtoolcache/node/20.20.0/x64/bin/npm config get cache
+4. Deploy Production	Setup Node	2026-01-23T03:11:55.4435795Z /home/runner/.npm
+4. Deploy Production	Setup Node	2026-01-23T03:11:55.5754318Z Cache hit for: node-cache-Linux-x64-npm-27ee12741b1a71ab9dead35f18489cea4ff56abceaacbac6a033cd6f1bd13358
+4. Deploy Production	Setup Node	2026-01-23T03:11:56.0498278Z Received 6892114 of 6892114 (100.0%), 18.3 MBs/sec
+4. Deploy Production	Setup Node	2026-01-23T03:11:56.0499192Z Cache Size: ~7 MB (6892114 B)
+4. Deploy Production	Setup Node	2026-01-23T03:11:56.0525664Z [command]/usr/bin/tar -xf /home/runner/work/_temp/012ea337-702b-4628-8da5-f86d7f48e941/cache.tzst -P -C /home/runner/work/DrJiraPokerPlanner/DrJiraPokerPlanner --use-compress-program unzstd
+4. Deploy Production	Setup Node	2026-01-23T03:11:56.1063976Z Cache restored successfully
+4. Deploy Production	Setup Node	2026-01-23T03:11:56.1083524Z Cache restored from key: node-cache-Linux-x64-npm-27ee12741b1a71ab9dead35f18489cea4ff56abceaacbac6a033cd6f1bd13358
+4. Deploy Production	Install Forge	﻿2026-01-23T03:11:56.1215891Z ##[group]Run npm install -g @forge/cli
+4. Deploy Production	Install Forge	2026-01-23T03:11:56.1216332Z [36;1mnpm install -g @forge/cli[0m
+4. Deploy Production	Install Forge	2026-01-23T03:11:56.1216602Z [36;1mnpm ci[0m
+4. Deploy Production	Install Forge	2026-01-23T03:11:56.1310302Z shell: /usr/bin/bash -e {0}
+4. Deploy Production	Install Forge	2026-01-23T03:11:56.1310589Z env:
+4. Deploy Production	Install Forge	2026-01-23T03:11:56.1310781Z   NODE_VERSION: 20.x
+4. Deploy Production	Install Forge	2026-01-23T03:11:56.1311006Z ##[endgroup]
+4. Deploy Production	Install Forge	2026-01-23T03:12:03.9141125Z npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+4. Deploy Production	Install Forge	2026-01-23T03:12:14.1882545Z 
+4. Deploy Production	Install Forge	2026-01-23T03:12:14.1884099Z added 781 packages in 18s
+4. Deploy Production	Install Forge	2026-01-23T03:12:14.1884932Z 
+4. Deploy Production	Install Forge	2026-01-23T03:12:14.1885607Z 199 packages are looking for funding
+4. Deploy Production	Install Forge	2026-01-23T03:12:14.1886256Z   run `npm fund` for details
+4. Deploy Production	Install Forge	2026-01-23T03:12:15.2897042Z npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3494124Z 
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3495167Z added 177 packages, and audited 178 packages in 2s
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3495732Z 
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3496220Z 39 packages are looking for funding
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3498682Z   run `npm fund` for details
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3555137Z 
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3555510Z 4 vulnerabilities (1 low, 3 moderate)
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3555867Z 
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3556059Z To address all issues, run:
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3556404Z   npm audit fix
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3556752Z 
+4. Deploy Production	Install Forge	2026-01-23T03:12:16.3556965Z Run `npm audit` for details.
+4. Deploy Production	Build	﻿2026-01-23T03:12:16.3795366Z ##[group]Run npm run build
+4. Deploy Production	Build	2026-01-23T03:12:16.3795655Z [36;1mnpm run build[0m
+4. Deploy Production	Build	2026-01-23T03:12:16.3832058Z shell: /usr/bin/bash -e {0}
+4. Deploy Production	Build	2026-01-23T03:12:16.3832311Z env:
+4. Deploy Production	Build	2026-01-23T03:12:16.3832491Z   NODE_VERSION: 20.x
+4. Deploy Production	Build	2026-01-23T03:12:16.3832693Z ##[endgroup]
+4. Deploy Production	Build	2026-01-23T03:12:16.4959957Z 
+4. Deploy Production	Build	2026-01-23T03:12:16.4960649Z > jira-issue-panel-custom-ui@1.2.25 build
+4. Deploy Production	Build	2026-01-23T03:12:16.4961249Z > cd static/poker-planner-ui && npm install && npm run build
+4. Deploy Production	Build	2026-01-23T03:12:16.4961565Z 
+4. Deploy Production	Build	2026-01-23T03:12:17.6927731Z npm warn ERESOLVE overriding peer dependency
+4. Deploy Production	Build	2026-01-23T03:12:17.6932406Z npm warn While resolving: @atlaskit/analytics-next-stable-react-context@1.0.1
+4. Deploy Production	Build	2026-01-23T03:12:17.6933271Z npm warn Found: react@18.3.1
+4. Deploy Production	Build	2026-01-23T03:12:17.6933627Z npm warn node_modules/react
+4. Deploy Production	Build	2026-01-23T03:12:17.6934049Z npm warn   react@"^18.3.1" from the root project
+4. Deploy Production	Build	2026-01-23T03:12:17.6934560Z npm warn   50 more (@atlaskit/atlassian-context, ...)
+4. Deploy Production	Build	2026-01-23T03:12:17.6934926Z npm warn
+4. Deploy Production	Build	2026-01-23T03:12:17.6935217Z npm warn Could not resolve dependency:
+4. Deploy Production	Build	2026-01-23T03:12:17.6935776Z npm warn peer react@"^16.8.0" from @atlaskit/analytics-next-stable-react-context@1.0.1
+4. Deploy Production	Build	2026-01-23T03:12:17.6936353Z npm warn node_modules/@atlaskit/analytics-next-stable-react-context
+4. Deploy Production	Build	2026-01-23T03:12:17.6937035Z npm warn   @atlaskit/analytics-next-stable-react-context@"1.0.1" from @atlaskit/analytics-next@11.1.3
+4. Deploy Production	Build	2026-01-23T03:12:17.6937844Z npm warn   node_modules/@atlaskit/analytics-next
+4. Deploy Production	Build	2026-01-23T03:12:17.6938330Z npm warn
+4. Deploy Production	Build	2026-01-23T03:12:17.6938792Z npm warn Conflicting peer dependency: react@16.14.0
+4. Deploy Production	Build	2026-01-23T03:12:17.6939337Z npm warn node_modules/react
+4. Deploy Production	Build	2026-01-23T03:12:17.6940356Z npm warn   peer react@"^16.8.0" from @atlaskit/analytics-next-stable-react-context@1.0.1
+4. Deploy Production	Build	2026-01-23T03:12:17.6941481Z npm warn   node_modules/@atlaskit/analytics-next-stable-react-context
+4. Deploy Production	Build	2026-01-23T03:12:17.6942692Z npm warn     @atlaskit/analytics-next-stable-react-context@"1.0.1" from @atlaskit/analytics-next@11.1.3
+4. Deploy Production	Build	2026-01-23T03:12:17.6943702Z npm warn     node_modules/@atlaskit/analytics-next
+4. Deploy Production	Build	2026-01-23T03:12:20.8782818Z npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+4. Deploy Production	Build	2026-01-23T03:12:21.6518785Z npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+4. Deploy Production	Build	2026-01-23T03:12:21.8680775Z npm warn deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility
+4. Deploy Production	Build	2026-01-23T03:12:22.0049141Z npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+4. Deploy Production	Build	2026-01-23T03:12:22.0846047Z npm warn deprecated rollup-plugin-terser@7.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
+4. Deploy Production	Build	2026-01-23T03:12:22.5402044Z npm warn deprecated workbox-cacheable-response@6.6.0: workbox-background-sync@6.6.0
+4. Deploy Production	Build	2026-01-23T03:12:25.2973227Z npm warn deprecated svgo@1.3.2: This SVGO version is no longer supported. Upgrade to v2.x.x.
+4. Deploy Production	Build	2026-01-23T03:12:32.5888123Z 
+4. Deploy Production	Build	2026-01-23T03:12:32.5888929Z added 1639 packages, and audited 1640 packages in 16s
+4. Deploy Production	Build	2026-01-23T03:12:32.5889366Z 
+4. Deploy Production	Build	2026-01-23T03:12:32.5889607Z 62 packages are looking for funding
+4. Deploy Production	Build	2026-01-23T03:12:32.5890280Z   run `npm fund` for details
+4. Deploy Production	Build	2026-01-23T03:12:32.6064740Z 
+4. Deploy Production	Build	2026-01-23T03:12:32.6065495Z 15 vulnerabilities (5 moderate, 10 high)
+4. Deploy Production	Build	2026-01-23T03:12:32.6065911Z 
+4. Deploy Production	Build	2026-01-23T03:12:32.6066289Z To address issues that do not require attention, run:
+4. Deploy Production	Build	2026-01-23T03:12:32.6066879Z   npm audit fix
+4. Deploy Production	Build	2026-01-23T03:12:32.6067106Z 
+4. Deploy Production	Build	2026-01-23T03:12:32.6067506Z To address all issues (including breaking changes), run:
+4. Deploy Production	Build	2026-01-23T03:12:32.6068112Z   npm audit fix --force
+4. Deploy Production	Build	2026-01-23T03:12:32.6068384Z 
+4. Deploy Production	Build	2026-01-23T03:12:32.6068593Z Run `npm audit` for details.
+4. Deploy Production	Build	2026-01-23T03:12:32.7511536Z 
+4. Deploy Production	Build	2026-01-23T03:12:32.7512185Z > poker-planner-ui@0.2.49 build
+4. Deploy Production	Build	2026-01-23T03:12:32.7513486Z > react-scripts build
+4. Deploy Production	Build	2026-01-23T03:12:32.7513768Z 
+4. Deploy Production	Build	2026-01-23T03:12:33.8721544Z Creating an optimized production build...
+4. Deploy Production	Build	2026-01-23T03:12:33.9680748Z Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+4. Deploy Production	Build	2026-01-23T03:12:33.9681380Z   npx update-browserslist-db@latest
+4. Deploy Production	Build	2026-01-23T03:12:33.9681971Z   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+4. Deploy Production	Build	2026-01-23T03:12:36.9078229Z [0;33mOne of your dependencies, babel-preset-react-app, is importing the
+4. Deploy Production	Build	2026-01-23T03:12:36.9078979Z "@babel/plugin-proposal-private-property-in-object" package without
+4. Deploy Production	Build	2026-01-23T03:12:36.9079700Z declaring it in its dependencies. This is currently working because
+4. Deploy Production	Build	2026-01-23T03:12:36.9080583Z "@babel/plugin-proposal-private-property-in-object" is already in your
+4. Deploy Production	Build	2026-01-23T03:12:36.9081305Z node_modules folder for unrelated reasons, but it [1mmay break at any time[0;33m.
+4. Deploy Production	Build	2026-01-23T03:12:36.9081638Z 
+4. Deploy Production	Build	2026-01-23T03:12:36.9081986Z babel-preset-react-app is part of the create-react-app project, [1mwhich
+4. Deploy Production	Build	2026-01-23T03:12:36.9082863Z is not maintianed anymore[0;33m. It is thus unlikely that this bug will
+4. Deploy Production	Build	2026-01-23T03:12:36.9083660Z ever be fixed. Add "@babel/plugin-proposal-private-property-in-object" to
+4. Deploy Production	Build	2026-01-23T03:12:36.9084247Z your devDependencies to work around this error. This will make this message
+4. Deploy Production	Build	2026-01-23T03:12:36.9084640Z go away.[0m
+4. Deploy Production	Build	2026-01-23T03:12:36.9084878Z   
+4. Deploy Production	Build	2026-01-23T03:12:44.2371529Z Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+4. Deploy Production	Build	2026-01-23T03:12:44.2372332Z   npx update-browserslist-db@latest
+4. Deploy Production	Build	2026-01-23T03:12:44.2373094Z   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+4. Deploy Production	Build	2026-01-23T03:12:44.8876287Z Failed to compile.
+4. Deploy Production	Build	2026-01-23T03:12:44.8876613Z 
+4. Deploy Production	Build	2026-01-23T03:12:44.8881776Z [eslint] 
+4. Deploy Production	Build	2026-01-23T03:12:44.8882263Z src/components/DonkeyKongJr.jsx
+4. Deploy Production	Build	2026-01-23T03:12:44.8883202Z   Line 135:3:  Definition for rule 'react-hooks/exhaustive-deps' was not found  react-hooks/exhaustive-deps
+4. Deploy Production	Build	2026-01-23T03:12:44.8883949Z 
+4. Deploy Production	Build	2026-01-23T03:12:44.8884313Z Search for the keywords to learn more about each error.
+4. Deploy Production	Build	2026-01-23T03:12:44.8884738Z 
+4. Deploy Production	Build	2026-01-23T03:12:44.8884751Z 
+4. Deploy Production	Build	2026-01-23T03:12:44.9419650Z ##[error]Process completed with exit code 1.
+4. Deploy Production	Post Run actions/checkout@v4	﻿2026-01-23T03:12:44.9538727Z Post job cleanup.
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0471428Z [command]/usr/bin/git version
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0507738Z git version 2.52.0
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0551675Z Temporarily overriding HOME='/home/runner/work/_temp/cbd714aa-bd2e-48bc-bde1-51f36541f3b5' before making global git config changes
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0553300Z Adding repository directory to the temporary git global config as a safe directory
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0558366Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/DrJiraPokerPlanner/DrJiraPokerPlanner
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0593337Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0625829Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0850872Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0872412Z http.https://github.com/.extraheader
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0884754Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.0916713Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.1135740Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+4. Deploy Production	Post Run actions/checkout@v4	2026-01-23T03:12:45.1166941Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+4. Deploy Production	Complete job	﻿2026-01-23T03:12:45.1498486Z Evaluate and set environment url
+4. Deploy Production	Complete job	2026-01-23T03:12:45.1502874Z Evaluated environment url: 
+4. Deploy Production	Complete job	2026-01-23T03:12:45.1503512Z Cleaning up orphan processes

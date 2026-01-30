@@ -179,13 +179,45 @@ function App() {
             }));
         }
 
-        // Polling
+        // Smart Polling with visibility detection and conditional intervals
+        let currentInterval = 2000; // Start with 2 seconds
+        
         const poll = async () => {
+           // Don't poll if tab is hidden
+           if (document.hidden) {
+               console.log('[SmartPolling] Tab hidden, skipping poll');
+               return;
+           }
+
            const pollPayload = isProject ? { roomKey: targetKey } : { issueId: targetKey };
            const data: any = await invoke('getSessionState', pollPayload);
            setSession(data);
+           
            if (data) {
                setIsJoining(false);
+               
+               // Adjust polling interval based on session status
+               let newInterval = currentInterval;
+               if (data.status === 'VOTING') {
+                   newInterval = 2000; // Fast polling during active voting
+               } else if (data.status === 'REVEALED') {
+                   newInterval = 5000; // Slower when revealed
+               } else {
+                   newInterval = 10000; // Very slow when idle
+               }
+
+               // Update interval if changed
+               if (newInterval !== currentInterval) {
+                   console.log(`[SmartPolling] Adjusting interval: ${currentInterval}ms → ${newInterval}ms (status: ${data.status})`);
+                   currentInterval = newInterval;
+                   
+                   // Restart polling with new interval
+                   if ((window as any).pokerInterval) {
+                       clearInterval((window as any).pokerInterval);
+                   }
+                   (window as any).pokerInterval = setInterval(poll, newInterval);
+               }
+
                // Keep session alive
                if (isProject) {
                    localStorage.setItem('dr_jira_poker_session', JSON.stringify({
@@ -195,8 +227,39 @@ function App() {
                }
            }
         };
+
+        // Visibility change handler
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                console.log('[SmartPolling] Tab hidden, pausing polling');
+                if ((window as any).pokerInterval) {
+                    clearInterval((window as any).pokerInterval);
+                    (window as any).pokerInterval = null;
+                }
+            } else {
+                console.log('[SmartPolling] Tab visible, resuming polling');
+                if (!(window as any).pokerInterval) {
+                    poll(); // Immediate poll on visibility
+                    (window as any).pokerInterval = setInterval(poll, currentInterval);
+                }
+            }
+        };
+
+        // Add visibility listener
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        // Store cleanup function
+        (window as any).cleanupPokerPolling = () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            if ((window as any).pokerInterval) {
+                clearInterval((window as any).pokerInterval);
+                (window as any).pokerInterval = null;
+            }
+        };
+
+        // Initial poll
         poll();
-        (window as any).pokerInterval = setInterval(poll, 1500);
+        (window as any).pokerInterval = setInterval(poll, currentInterval);
 
       } catch (e: any) {
           console.error("Failed to start game", e);
@@ -240,8 +303,10 @@ function App() {
       const confirmLeave = window.confirm("Are you sure you want to leave the room?");
       if (!confirmLeave) return;
 
-      // Stop polling immediately
-      if ((window as any).pokerInterval) {
+      // Stop polling and clean up listeners
+      if ((window as any).cleanupPokerPolling) {
+          (window as any).cleanupPokerPolling();
+      } else if ((window as any).pokerInterval) {
           clearInterval((window as any).pokerInterval);
           (window as any).pokerInterval = null;
       }
