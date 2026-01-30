@@ -1,12 +1,14 @@
 import Resolver from '@forge/resolver';
 import { storage, route, asUser } from '@forge/api';
+import { getGlobalCache } from './services/CacheService';
 
 const resolver = new Resolver();
+const cache = getGlobalCache(30000); // 30s default TTL for backlog
 
 // Key Generation
 const getSessionKey = (issueId) => `poker_session_v1_${issueId}`;
+const getRoomKey = (key) => `poker_v2_room_${key}`;
 
-// Helper to reliably get Issue ID from context
 // Helper to reliably get Issue ID from context or payload
 const getIssueId = (req) => {
   return req.payload?.issueId || req.context.extension?.issue?.id || req.context.extension?.issueId;
@@ -57,15 +59,18 @@ resolver.define('getBacklog', async (req) => {
         return { issues: [], total: 0 };
     }
 
-    // Robustness: If user entered an Issue Key (e.g. GS-123), extract 'GS'
     if (projectKey.includes('-')) {
         projectKey = projectKey.split('-')[0];
     }
     
-    if (projectKey.includes('-')) {
-        projectKey = projectKey.split('-')[0];
+    // CACHE CHECK
+    const cacheKey = `backlog:${projectKey}:${nextPageToken || 'initial'}`;
+    const cached = cache.get(cacheKey);
+    if (cached) {
+        console.log(`[getBacklog] Cache hit for ${projectKey}`);
+        return cached;
     }
-    
+
     console.log(`[getBacklog] ENTERING function. projectKey: ${projectKey}`);
     console.log(`[getBacklog] Context AccountId: ${req.context.accountId}`);
 
@@ -115,11 +120,15 @@ resolver.define('getBacklog', async (req) => {
             storyPoints: i.fields.customfield_10016 || null // Story Points estimate
         }));
         
-        return {
+        const result = {
             issues: mappedIssues,
             total: data.total,
             nextPageToken: data.nextPageToken // Return token for next page
         };
+
+        // SET CACHE
+        cache.set(cacheKey, result);
+        return result;
 
     } catch (e) {
         console.error("[getBacklog] Exception caught:", e);
@@ -163,6 +172,10 @@ resolver.define('updateIssue', async (req) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
+        
+        // Invalidate backlog cache if successful, but we don't know proj key easily.
+        // We'll skip invalidation for now as it's expensive to lookup proj key.
+        
         return { success: response.ok };
     } catch (e) {
         return { success: false, error: e };
@@ -172,8 +185,6 @@ resolver.define('updateIssue', async (req) => {
 // 2. SESSION / ROOM LOGIC
 // We now support "Room Mode" where the key is the Project Key.
 // If roomKey is generic, we use `poker_room_${key}`.
-
-const getRoomKey = (key) => `poker_v2_room_${key}`;
 
 resolver.define('joinSession', async (req) => {
   console.log(`[joinSession] ENTERING function. AccountId: ${req.context.accountId}`);

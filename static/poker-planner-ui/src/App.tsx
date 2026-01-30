@@ -66,12 +66,23 @@ function App() {
   const [showBacklog, setShowBacklog] = useState(true); // Backlog visibility toggle
   const [backlogError, setBacklogError] = useState<string | null>(null);
 
+  // Smart Polling: Track visibility
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+       /* Optional: trigger immediate poll when becoming visible */
+       if (!document.hidden && (window as any).pokerPollFn) {
+           (window as any).pokerPollFn(); 
+       }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
   // Initialize Context & Check Local Storage
   useEffect(() => {
-     // Enable Theme Sync
+     // ... (keep existing) ...
      view.theme.enable();
-
-     // @ts-ignore - view.getContext returns generic Promise<any> often, explicitly casting via state
+     // @ts-ignore
      view.getContext().then((ctx: any) => {
          setContext(ctx);
          setAccountId(ctx.accountId);
@@ -137,7 +148,7 @@ function App() {
       }
   };
 
-  // START GAME (Shared Logic)
+  // START GAME (Smart Polling Version)
   const startGame = async (targetKey: string, explicitUser: any = null, isProject = false) => {
       setIsJoining(true); 
       await invoke('logMessage', { message: 'startGame initiated', data: { targetKey, isProject } });
@@ -176,10 +187,20 @@ function App() {
             }));
         }
 
-        // Polling
+        // Smart Polling Logic
+        if ((window as any).pokerLoopId) clearTimeout((window as any).pokerLoopId);
+
         const poll = async () => {
+           // 1. Adaptive Interval: If hidden, slow down to 10s. If visible, 2s.
+           if (document.hidden) {
+               (window as any).pokerLoopId = setTimeout(poll, 10000);
+               return; // Skip fetch
+           }
+
            const pollPayload = isProject ? { roomKey: targetKey } : { issueId: targetKey };
            const data: any = await invoke('getSessionState', pollPayload);
+           
+           // Handling updates
            setSession(data);
            if (data) {
                setIsJoining(false);
@@ -191,9 +212,16 @@ function App() {
                    }));
                }
            }
+           
+           // Schedule next
+           (window as any).pokerLoopId = setTimeout(poll, 2000);
         };
+        
+        // Expose poll fn for visibility handler
+        (window as any).pokerPollFn = poll;
+
         poll();
-        (window as any).pokerInterval = setInterval(poll, 1500);
+        // Removed rigid setInterval
 
       } catch (e: any) {
           console.error("Failed to start game", e);
