@@ -12,9 +12,9 @@ const GameArea = ({ session, accountId, onReveal, onReset }) => {
   const isModerator = session.moderatorId === accountId;
   const revealed = session.status === 'REVEALED';
 
-  // Derived Timer State
-  const timer = session.timer || { status: 'STOPPED', duration: 60 };
-  const timerActive = timer.status === 'RUNNING';
+  // Derived Timer State - Check if timer is active based on timerEnd
+  const timerActive = session.timerEnd && session.timerEnd > Date.now();
+  const timerDurationFromSession = session.timerDuration || 60;
 
   // Audio Logic
   const audioRef = useRef(null);
@@ -79,8 +79,8 @@ const GameArea = ({ session, accountId, onReveal, onReset }) => {
     <div className="table-surface" style={{ position: 'relative' }}>
        {/* Countdown Timer */}
        <Timer 
-         duration={timer.duration}
-         startTime={timer.startTime}
+         duration={timerDurationFromSession}
+         timerEnd={session.timerEnd}
          isActive={timerActive && !revealed}
          onComplete={handleTimerComplete}
        />

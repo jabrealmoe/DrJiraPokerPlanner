@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const Timer = ({ duration = 60, startTime, onComplete, isActive }) => {
+const Timer = ({ duration = 60, timerEnd, onComplete, isActive }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (!isActive || !startTime) {
+    if (!isActive || !timerEnd) {
        setIsVisible(false);
        return;
     }
@@ -14,8 +14,7 @@ const Timer = ({ duration = 60, startTime, onComplete, isActive }) => {
 
     const tick = () => {
         const now = Date.now();
-        const elapsedSeconds = Math.floor((now - startTime) / 1000);
-        const remaining = Math.max(0, duration - elapsedSeconds);
+        const remaining = Math.max(0, Math.floor((timerEnd - now) / 1000));
         
         setTimeLeft(remaining);
         
@@ -28,7 +27,7 @@ const Timer = ({ duration = 60, startTime, onComplete, isActive }) => {
     tick(); // Update immediately
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [isActive, startTime, duration, onComplete]);
+  }, [isActive, timerEnd, onComplete]);
 
   const percentage = (timeLeft / duration) * 100;
   const isWarning = timeLeft <= 10;
