@@ -109,13 +109,22 @@ export class BacklogService {
    */
   async fetchIssues(jql, startAt) {
       const fields = ['summary', 'status', 'issuetype', 'customfield_10016'];
-      const fieldString = fields.join(',');
       const startAtValue = startAt || 0;
 
-      // Use explicit interpolation for route template to handle encoding correctly
-      const response = await asUser().requestJira(
-        route`/rest/api/3/search?jql=${jql}&fields=${fieldString}&maxResults=50&startAt=${startAtValue}`
-      );
+      // Use POST /rest/api/3/search to avoid 410 Deprecated error on GET
+      const response = await asUser().requestJira(route`/rest/api/3/search`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          jql,
+          fields,
+          maxResults: 50,
+          startAt: startAtValue
+        })
+      });
 
       if (!response.ok) {
         const text = await response.text();
