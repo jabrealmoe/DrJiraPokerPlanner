@@ -265,6 +265,12 @@ function App() {
       const confirmLeave = window.confirm("Are you sure you want to leave the room?");
       if (!confirmLeave) return;
 
+      // STOP POLLING immediately
+      if ((window as any).pokerLoopId) {
+          clearTimeout((window as any).pokerLoopId);
+          (window as any).pokerLoopId = null;
+      }
+
       try {
           await invoke('leaveSession', { 
               roomKey: session.roomKey,
