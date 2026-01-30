@@ -82,6 +82,11 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
                      summary: data.fields.summary, 
                      description: descriptionText
                  });
+
+                 // Auto-Enable Edit Mode for Moderator
+                 if (isEditable) {
+                    setEditing(true);
+                 }
              }
            } catch(e) { console.error(e); }
         };
@@ -89,7 +94,7 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
     } else {
         setIssue(null);
     }
-  }, [targetIssueId]);
+  }, [targetIssueId, isEditable]);
 
   const handleSave = () => {
       if (updateIssue) {
