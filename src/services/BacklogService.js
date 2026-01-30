@@ -111,8 +111,8 @@ export class BacklogService {
       const fields = ['summary', 'status', 'issuetype', 'customfield_10016'];
       const startAtValue = startAt || 0;
 
-      // Use POST /rest/api/3/search to avoid 410 Deprecated error on GET
-      const response = await asUser().requestJira(route`/rest/api/3/search`, {
+      // Use POST /rest/api/3/search/jql as explicitly requested by 410 error
+      const response = await asUser().requestJira(route`/rest/api/3/search/jql`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
