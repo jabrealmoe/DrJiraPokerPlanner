@@ -109,20 +109,12 @@ export class BacklogService {
    */
   async fetchIssues(jql, startAt) {
       const fields = ['summary', 'status', 'issuetype', 'customfield_10016'];
-      
-      const params = new URLSearchParams({
-        jql,
-        fields: fields.join(','),
-        maxResults: '50'
-      });
+      const fieldString = fields.join(',');
+      const startAtValue = startAt || 0;
 
-      if (startAt) {
-        params.append('startAt', startAt);
-      }
-
-      // Note: We use route interpolated string carefully
+      // Use explicit interpolation for route template to handle encoding correctly
       const response = await asUser().requestJira(
-        route`/rest/api/3/search?${params.toString()}`
+        route`/rest/api/3/search?jql=${jql}&fields=${fieldString}&maxResults=50&startAt=${startAtValue}`
       );
 
       if (!response.ok) {
