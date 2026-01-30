@@ -1,5 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { requestJira } from '@forge/bridge';
+import Button, { ButtonGroup } from '@atlaskit/button';
+import BoldIcon from '@atlaskit/icon/glyph/editor/bold';
+import ItalicIcon from '@atlaskit/icon/glyph/editor/italic';
+import UnderlineIcon from '@atlaskit/icon/glyph/editor/underline';
+import StrikethroughIcon from '@atlaskit/icon/glyph/editor/strikethrough';
+import BulletListIcon from '@atlaskit/icon/glyph/editor/bullet-list';
+import NumberListIcon from '@atlaskit/icon/glyph/editor/number-list';
+import AlignLeftIcon from '@atlaskit/icon/glyph/editor/align-left';
+import AlignCenterIcon from '@atlaskit/icon/glyph/editor/align-center';
+import AlignRightIcon from '@atlaskit/icon/glyph/editor/align-right';
+import CodeIcon from '@atlaskit/icon/glyph/editor/code';
+import QuoteIcon from '@atlaskit/icon/glyph/editor/quote';
+import LinkIcon from '@atlaskit/icon/glyph/editor/link';
+import UndoIcon from '@atlaskit/icon/glyph/editor/undo';
+import RedoIcon from '@atlaskit/icon/glyph/editor/redo';
+import TextStyleIcon from '@atlaskit/icon/glyph/editor/text-style';
+import HorizontalRuleIcon from '@atlaskit/icon/glyph/editor/horizontal-rule';
 
 // Helper to extract plain text from ADF (Atlassian Document Format)
 const extractTextFromADF = (adf) => {
@@ -99,12 +116,9 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
   // Sync editor content when issue changes (initial load), but NOT on every keystroke
   useEffect(() => {
     if (editorRef.current && issue && form.description) {
-        // Only overwrite if it's clearly an initial load or switch
-        // We use a simple check: if editor is empty or different?
-        // Actually, since we only run this when 'issue' object changes reference (new fetch), it's safe.
         editorRef.current.innerText = form.description;
     }
-  }, [issue]); // Only run when issue object refreshes
+  }, [issue]);
 
   const handleSave = () => {
       if (updateIssue) {
@@ -142,8 +156,6 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
       );
   }
 
-
-
   // VIEW MODE
   if (!editing) {
       return (
@@ -166,12 +178,12 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
                <TypewriterText 
                    text={form.description} 
                    tagName="p"
-                   speed={5} // Fast for description
+                   speed={5} 
                    style={{ 
                        margin: 0, 
                        fontSize: '0.9rem', 
                        color: 'var(--text-muted)', 
-                       whiteSpace: 'pre-wrap', // Preserve newlines
+                       whiteSpace: 'pre-wrap', 
                        lineHeight: '1.5',
                        maxHeight: '70px',
                        overflowY: 'auto',
@@ -196,104 +208,66 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
             />
        </div>
        
-       {/* Rich Text Toolbar */}
+       {/* Modern Rich Text Toolbar */}
        <div style={{ 
            display: 'flex', 
            gap: 4, 
            padding: '8px', 
            background: 'var(--surface)', 
-           borderRadius: 6,
-           border: '1px solid var(--border)',
-           flexWrap: 'wrap'
+           borderRadius: 4,
+           borderBottom: '1px solid var(--border)',
+           flexWrap: 'wrap',
+           width: '100%',
+           alignItems: 'center'
        }}>
-           {/* Text Formatting */}
-           <button onClick={() => applyFormat('bold')} style={toolbarButtonStyle} title="Bold (Ctrl+B)">
-               <strong>B</strong>
-           </button>
-           <button onClick={() => applyFormat('italic')} style={toolbarButtonStyle} title="Italic (Ctrl+I)">
-               <em>I</em>
-           </button>
-           <button onClick={() => applyFormat('underline')} style={toolbarButtonStyle} title="Underline (Ctrl+U)">
-               <u>U</u>
-           </button>
-           <button onClick={() => applyFormat('strikeThrough')} style={toolbarButtonStyle} title="Strikethrough">
-               <s>S</s>
-           </button>
+           <ButtonGroup>
+             <Button iconBefore={<BoldIcon label="Bold" />} appearance="subtle" onClick={() => applyFormat('bold')} spacing="none" />
+             <Button iconBefore={<ItalicIcon label="Italic" />} appearance="subtle" onClick={() => applyFormat('italic')} spacing="none" />
+             <Button iconBefore={<UnderlineIcon label="Underline" />} appearance="subtle" onClick={() => applyFormat('underline')} spacing="none" />
+             <Button iconBefore={<StrikethroughIcon label="Strikethrough" />} appearance="subtle" onClick={() => applyFormat('strikeThrough')} spacing="none" />
+           </ButtonGroup>
            
-           <div style={{ width: 1, background: 'var(--border)', margin: '0 4px' }} />
+           <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 8px' }} />
            
-           {/* Headings */}
-           <button onClick={() => applyFormat('formatBlock', '<h1>')} style={toolbarButtonStyle} title="Heading 1">
-               H1
-           </button>
-           <button onClick={() => applyFormat('formatBlock', '<h2>')} style={toolbarButtonStyle} title="Heading 2">
-               H2
-           </button>
-           <button onClick={() => applyFormat('formatBlock', '<h3>')} style={toolbarButtonStyle} title="Heading 3">
-               H3
-           </button>
-           <button onClick={() => applyFormat('formatBlock', '<p>')} style={toolbarButtonStyle} title="Paragraph">
-               P
-           </button>
+           <ButtonGroup>
+               <Button appearance="subtle" onClick={() => applyFormat('formatBlock', '<h1>')} spacing="compact">H1</Button>
+               <Button appearance="subtle" onClick={() => applyFormat('formatBlock', '<h2>')} spacing="compact">H2</Button>
+               <Button iconBefore={<TextStyleIcon label="Styles" />} appearance="subtle" onClick={() => applyFormat('formatBlock', '<p>')} spacing="none" />
+           </ButtonGroup>
+
+           <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 8px' }} />
+
+           <ButtonGroup>
+               <Button iconBefore={<BulletListIcon label="Bullet List" />} appearance="subtle" onClick={() => applyFormat('insertUnorderedList')} spacing="none" />
+               <Button iconBefore={<NumberListIcon label="Number List" />} appearance="subtle" onClick={() => applyFormat('insertOrderedList')} spacing="none" />
+           </ButtonGroup>
+
+           <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 8px' }} />
+
+           <ButtonGroup>
+               <Button iconBefore={<AlignLeftIcon label="Align Left" />} appearance="subtle" onClick={() => applyFormat('justifyLeft')} spacing="none" />
+               <Button iconBefore={<AlignCenterIcon label="Align Center" />} appearance="subtle" onClick={() => applyFormat('justifyCenter')} spacing="none" />
+               <Button iconBefore={<AlignRightIcon label="Align Right" />} appearance="subtle" onClick={() => applyFormat('justifyRight')} spacing="none" />
+           </ButtonGroup>
+
+           <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 8px' }} />
+
+           <Button iconBefore={<CodeIcon label="Code" />} appearance="subtle" onClick={() => applyFormat('formatBlock', '<pre>')} spacing="none" />
+           <Button iconBefore={<QuoteIcon label="Quote" />} appearance="subtle" onClick={() => applyFormat('formatBlock', 'blockquote')} spacing="none" />
+           <Button iconBefore={<LinkIcon label="Link" />} appearance="subtle" onClick={() => {
+                const url = prompt('Enter URL:');
+                if (url) applyFormat('createLink', url);
+           }} spacing="none" />
+           <Button iconBefore={<HorizontalRuleIcon label="Horizontal Rule" />} appearance="subtle" onClick={() => applyFormat('insertHorizontalRule')} spacing="none" />
+
+           <div style={{ flex: 1 }} />
            
-           <div style={{ width: 1, background: 'var(--border)', margin: '0 4px' }} />
-           
-           {/* Lists */}
-           <button onClick={() => applyFormat('insertUnorderedList')} style={toolbarButtonStyle} title="Bullet List">
-               • List
-           </button>
-           <button onClick={() => applyFormat('insertOrderedList')} style={toolbarButtonStyle} title="Numbered List">
-               1. List
-           </button>
-           
-           <div style={{ width: 1, background: 'var(--border)', margin: '0 4px' }} />
-           
-           {/* Alignment */}
-           <button onClick={() => applyFormat('justifyLeft')} style={toolbarButtonStyle} title="Align Left">
-               ⬅
-           </button>
-           <button onClick={() => applyFormat('justifyCenter')} style={toolbarButtonStyle} title="Align Center">
-               ↔
-           </button>
-           <button onClick={() => applyFormat('justifyRight')} style={toolbarButtonStyle} title="Align Right">
-               ➡
-           </button>
-           
-           <div style={{ width: 1, background: 'var(--border)', margin: '0 4px' }} />
-           
-           {/* Special */}
-           <button onClick={() => applyFormat('formatBlock', '<pre>')} style={toolbarButtonStyle} title="Code Block">
-               {'</>'}
-           </button>
-           <button onClick={() => applyFormat('formatBlock', 'blockquote')} style={toolbarButtonStyle} title="Quote">
-               "
-           </button>
-           <button onClick={() => applyFormat('insertHorizontalRule')} style={toolbarButtonStyle} title="Horizontal Line">
-               ―
-           </button>
-           <button 
-               onClick={() => {
-                   const url = prompt('Enter URL:');
-                   if (url) applyFormat('createLink', url);
-               }} 
-               style={toolbarButtonStyle} 
-               title="Insert Link"
-           >
-               🔗
-           </button>
-           
-           <div style={{ width: 1, background: 'var(--border)', margin: '0 4px' }} />
-           
-           {/* Undo/Redo */}
-           <button onClick={() => applyFormat('undo')} style={toolbarButtonStyle} title="Undo (Ctrl+Z)">
-               ↶
-           </button>
-           <button onClick={() => applyFormat('redo')} style={toolbarButtonStyle} title="Redo (Ctrl+Y)">
-               ↷
-           </button>
+           <ButtonGroup>
+               <Button iconBefore={<UndoIcon label="Undo" />} appearance="subtle" onClick={() => applyFormat('undo')} spacing="none" />
+               <Button iconBefore={<RedoIcon label="Redo" />} appearance="subtle" onClick={() => applyFormat('redo')} spacing="none" />
+           </ButtonGroup>
        </div>
        
-       {/* Rich Text Editor */}
        <div
            ref={editorRef}
            contentEditable
@@ -301,36 +275,27 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
            onInput={(e) => setForm({...form, description: e.currentTarget.innerText})}
            style={{ 
                width: '100%', 
-               minHeight: 100,
+               minHeight: 120,
                padding: 12, 
-               borderRadius: 4, 
+               borderRadius: '0 0 4px 4px', 
                border: '1px solid var(--border)', 
+               borderTop: 'none',
                background: 'var(--ds-background-input, #fff)', 
                color: 'var(--text-main)', 
                fontFamily: 'inherit',
                outline: 'none',
                overflowY: 'auto',
-               maxHeight: 200
+               maxHeight: 300,
+               marginTop: -4 // overlap with toolbar border
            }}
        />
        
-       <div style={{ display: 'flex', gap: 8, alignSelf: 'flex-end' }}>
+       <div style={{ display: 'flex', gap: 8, alignSelf: 'flex-end', marginTop: 8 }}>
            <button onClick={() => setEditing(false)} style={{ padding: '6px 12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 4, color: 'var(--text-muted)', cursor: 'pointer' }}>Cancel</button>
            <button onClick={handleSave} style={{ padding: '6px 12px', background: 'var(--primary)', border: 'none', borderRadius: 4, color: 'var(--primary-text)', cursor: 'pointer', fontWeight: 600 }}>Save</button>
        </div>
     </div>
   );
-};
-
-const toolbarButtonStyle = {
-    padding: '4px 8px',
-    background: 'transparent',
-    border: '1px solid transparent',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: '0.9rem',
-    color: 'var(--text-main)',
-    transition: 'all 0.2s'
 };
 
 export default ActiveIssue;
