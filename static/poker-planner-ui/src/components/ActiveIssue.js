@@ -124,19 +124,38 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
       if (updateIssue) {
           // Get plain text from editor
           const plainText = editorRef.current?.innerText || form.description;
+
+          // Check if original field was ADF (Object) or Wiki (String)
+          const isADF = issue?.fields?.description && typeof issue.fields.description === 'object';
+          let descriptionPayload = plainText;
+
+          if (isADF) {
+              // Construct valid minimal ADF "doc" -> "paragraph" -> "text"
+              descriptionPayload = {
+                  version: 1,
+                  type: 'doc',
+                  content: [
+                      {
+                          type: 'paragraph',
+                          content: plainText ? [{ type: 'text', text: plainText }] : []
+                      }
+                  ]
+              };
+          }
           
           updateIssue('updateIssue', { 
               issueId: targetIssueId,
               summary: form.summary,
-              description: plainText
+              description: descriptionPayload
           });
+
           // Optimistic update
           setIssue({
               ...issue,
               fields: {
                   ...issue.fields,
                   summary: form.summary,
-                  description: plainText
+                  description: descriptionPayload
               }
           });
       }
