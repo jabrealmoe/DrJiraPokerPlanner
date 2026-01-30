@@ -96,6 +96,16 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
     }
   }, [targetIssueId, isEditable]);
 
+  // Sync editor content when issue changes (initial load), but NOT on every keystroke
+  useEffect(() => {
+    if (editorRef.current && issue && form.description) {
+        // Only overwrite if it's clearly an initial load or switch
+        // We use a simple check: if editor is empty or different?
+        // Actually, since we only run this when 'issue' object changes reference (new fetch), it's safe.
+        editorRef.current.innerText = form.description;
+    }
+  }, [issue]); // Only run when issue object refreshes
+
   const handleSave = () => {
       if (updateIssue) {
           // Get plain text from editor
@@ -302,7 +312,6 @@ const ActiveIssue = ({ session, isEditable, updateIssue }) => {
                overflowY: 'auto',
                maxHeight: 200
            }}
-           dangerouslySetInnerHTML={{ __html: form.description.replace(/\n/g, '<br>') }}
        />
        
        <div style={{ display: 'flex', gap: 8, alignSelf: 'flex-end' }}>
