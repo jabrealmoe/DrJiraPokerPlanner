@@ -77,7 +77,6 @@ The app includes an **Admin Page** for global settings.
 3.  Configure:
     - **Default Deck**: Fibonacci, T-Shirt, or Custom.
     - **Permissions**: Who can reveal votes (Moderator, Assignee, or Any).
-    - **Webhook Integration**: Send "Reveal" events to an N8N webhook for automation.
 
 ## 🧪 Testing
 
