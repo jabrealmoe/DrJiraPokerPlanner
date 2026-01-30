@@ -52,6 +52,7 @@ export class SessionService {
     session.participants[accountId] = {
       name: displayName,
       vote: null,
+      hasVoted: false,
       avatarUrl: avatarUrl || null,
       joinedAt: session.participants[accountId]?.joinedAt || Date.now()
     };

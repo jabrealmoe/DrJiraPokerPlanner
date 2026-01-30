@@ -46,6 +46,7 @@ export class VotingService {
 
     if (session.participants[accountId]) {
       session.participants[accountId].vote = vote;
+      session.participants[accountId].hasVoted = true;
     }
 
     session.updatedAt = Date.now();
@@ -119,6 +120,7 @@ export class VotingService {
     if (session.participants) {
       Object.keys(session.participants).forEach(participantId => {
         session.participants[participantId].vote = null;
+        session.participants[participantId].hasVoted = false;
       });
     }
 
